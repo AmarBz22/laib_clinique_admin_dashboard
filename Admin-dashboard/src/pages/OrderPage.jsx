@@ -86,9 +86,9 @@ const OrdersPage = () => {
   };
 
   return (
-    <div className="p-6 mt-20">
+    <div className="md:p-6 flex flex-col px-4 justify-center items-center mt-20 mb-10">
       <h1 className="text-2xl font-semibold mb-8 text-center">Orders</h1>
-      <div className="flex justify-between mb-4">
+      <div className="md:flex md:gap-0 md:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
         <input
           type="text"
           placeholder="Search by order name"
@@ -106,7 +106,9 @@ const OrdersPage = () => {
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
         </select>
-        <button className="bg-primary-pink text-white p-2 rounded">Add Order</button>
+        <div className='col-span-2 flex justify-center'>
+          <button className="w-[150px] bg-primary-pink text-white p-2 rounded">Add Order</button>
+        </div>
       </div>
 
       <div className="w-full mt-5 border border-gray-200 rounded-lg shadow-md">
@@ -130,17 +132,19 @@ const OrdersPage = () => {
                 <td className="p-3 border-b border-gray-200">{order.name}</td>
                 <td className="p-3 border-b border-gray-200">{order.phone}</td>
                 <td className="p-3 border-b border-gray-200">{order.status}</td>
-                <td className="p-3 border-b border-gray-200 flex space-x-2">
-                  <FaCheckCircle
-                    className="text-green-500 cursor-pointer"
-                    title="Confirm Order"
-                    onClick={() => handleConfirmDeleteClick(order, 'confirm')}
-                  />
-                  <FaTrashAlt
-                    className="text-red-500 cursor-pointer"
-                    title="Delete Order"
-                    onClick={() => handleConfirmDeleteClick(order, 'delete')}
-                  />
+                <td className="p-3 border-b border-gray-200 ">
+                <div className='flex items-center gap-4'>
+                    <FaCheckCircle
+                      className="text-green-500 cursor-pointer"
+                      title="Confirm Order"
+                      onClick={() => handleConfirmDeleteClick(order, 'confirm')}
+                    />
+                    <FaTrashAlt
+                      className="text-red-500 cursor-pointer"
+                      title="Delete Order"
+                      onClick={() => handleConfirmDeleteClick(order, 'delete')}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}

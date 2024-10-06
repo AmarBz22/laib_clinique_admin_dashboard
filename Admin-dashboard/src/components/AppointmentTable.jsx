@@ -33,7 +33,7 @@ const AppointmentsTable = () => {
               <td className="p-3 border-b border-gray-200">{appointment.date}</td>
               <td className="p-3 border-b border-gray-200">{appointment.time}</td>
               <td className="p-3 border-b border-gray-200">{appointment.patient}</td>
-              <td className="p-3 border-b border-gray-200 flex items-center">
+              <td className="p-3 border-b border-gray-200 ">
                 <span
                   className={`status-indicator 
                     ${appointment.status === 'In Progress' ? 'status-in-progress' : 

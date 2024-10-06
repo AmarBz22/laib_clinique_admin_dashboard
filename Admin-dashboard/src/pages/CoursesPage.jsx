@@ -57,7 +57,7 @@ const CoursesPage = () => {
       <h1 className="text-2xl font-semibold mb-8 text-center">Courses</h1>
 
       {/* Filters */}
-      <div className="flex justify-between mb-4">
+      <div className="grid md:grid-cols-3 grid-1 md:gap-0 gap-2 mb-4">
         <input
           type="text"
           placeholder="Search courses"
@@ -88,36 +88,39 @@ const CoursesPage = () => {
       </div>
 
       {/* Courses List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCourses.map((course, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:translate-y-[-5px]">
-            <img
-              src={course.image}
-              alt={course.title}
-              className="w-full h-40 object-cover"
-            />
-            <div className="p-4 bg-light-gray-bg">
-              <h3 className="text-lg font-semibold text-dark-gray-text mb-2">{course.title}</h3>
-              <p className="text-sm text-muted-gray-text mb-2">
-                <span className={`inline-block px-2 py-1 rounded text-white ${
-                  course.type === 'Free'
-                    ? 'bg-green-500'
-                    : course.type === 'Reduced'
-                    ? 'bg-yellow-500'
-                    : 'bg-red-500'
-                }`}>
-                  {course.type}
-                </span>
-              </p>
-              <p className="text-sm text-muted-gray-text mb-2">Audience: {course.audience}</p>
-              <p className="text-sm text-muted-gray-text mb-2">Price: {course.price === 0 ? 'Free' : `$${course.price}`}</p>
-              <button className="bg-primary-pink text-white px-4 py-2 rounded mt-2">
-                Learn More
-              </button>
+      <div className='w-full flex flex-col items-center '>
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+          {filteredCourses.map((course, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:translate-y-[-5px]">
+              <img
+                src={course.image}
+                alt={course.title}
+                className="w-full h-40 object-cover"
+              />
+              <div className="p-4 bg-light-gray-bg">
+                <h3 className="text-lg font-semibold text-dark-gray-text mb-2">{course.title}</h3>
+                <p className="text-sm text-muted-gray-text mb-2">
+                  <span className={`inline-block px-2 py-1 rounded text-white ${
+                    course.type === 'Free'
+                      ? 'bg-green-500'
+                      : course.type === 'Reduced'
+                      ? 'bg-yellow-500'
+                      : 'bg-red-500'
+                  }`}>
+                    {course.type}
+                  </span>
+                </p>
+                <p className="text-sm text-muted-gray-text mb-2">Audience: {course.audience}</p>
+                <p className="text-sm text-muted-gray-text mb-2">Price: {course.price === 0 ? 'Free' : `$${course.price}`}</p>
+                <button className="bg-primary-pink text-white px-4 py-2 rounded mt-2">
+                  Learn More
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+      
     </div>
   );
 };

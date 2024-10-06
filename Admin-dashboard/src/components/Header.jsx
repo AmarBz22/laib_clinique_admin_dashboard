@@ -4,29 +4,22 @@ import { BiMenu, BiSearch } from 'react-icons/bi';
 const Header = ({ toggleSidebar, isSidebarOpen }) => {
   return (
     <header
-      className={`flex items-center justify-between p-4 bg-white shadow-md h-20 fixed top-0 transition-all duration-300`}
-      style={{ marginLeft: isSidebarOpen ? '256px' : '0', width: isSidebarOpen ? 'calc(100% - 256px)' : '100%' }} // Adjust based on your sidebar width
+      className={`${isSidebarOpen ? 'responsive-div ': 'w-full'} flex items-center  justify-between p-4 w- bg-white shadow-md h-20 fixed top-0  transition-all duration-300`}
+
+    // Adjust based on your sidebar width
     >
-      {/* Burger Menu */}
-      <button onClick={toggleSidebar}>
-        <BiMenu className="text-2xl" />
-      </button>
+      <div className='flex justify-start items-center'>
+        {/* Burger Menu */}
+        <button className='' onClick={toggleSidebar}>
+          <BiMenu className="text-2xl" />
+        </button>
 
-      {/* Dashboard Text */}
-      <span className="ml-2 font-semibold text-2xl">Dashboard</span>
-
-      {/* Search Box */}
-      <div className="flex-grow mx-4">
-        <div className="relative w-[20%] mx-auto">
-          <BiSearch className="absolute left-2 top-2 text-black text-3xl" />
-          <input
-            type="text"
-            placeholder="Search here..."
-            className="pl-10 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-primary-pink"
-            style={{ borderRadius: '12px' }}
-          />
-        </div>
+        {/* Dashboard Text */}
+        <span className="ml-2 font-semibold lg:text-2xl text-lg">Dashboard</span>
       </div>
+      
+
+      
 
       {/* Profile Section */}
       <div className="flex items-center">

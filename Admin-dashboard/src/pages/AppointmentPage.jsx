@@ -45,10 +45,10 @@ const AppointmentsPage = () => {
   };
 
   return (
-    <div className="p-6 mt-20">
+    <div className="md:p-6 flex flex-col  justify-center items-center mt-20 mb-10 px-2">
       <h1 className="text-2xl font-semibold mb-8 text-center">Appointments</h1>
 
-      <div className="flex justify-between mb-4">
+      <div className="md:flex md:gap-0 md:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
         <input
           type="text"
           placeholder="Search by patient name"
@@ -66,10 +66,12 @@ const AppointmentsPage = () => {
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
         </select>
-        <button className="bg-primary-pink text-white p-2 rounded">Add Appointment</button>
+        <div className='col-span-2 flex justify-center'>
+          <button className="w-[150px] bg-primary-pink text-white p-2 rounded">Add Appointment</button>
+        </div>
       </div>
 
-      <table className="w-full border-collapse bg-white rounded-lg shadow-md">
+      <table className="w-full border-collapse bg-white rounded-lg shadow-md ">
         <thead>
           <tr>
             <th className="text-gray-800 font-semibold p-3 text-left">Date</th>
@@ -89,24 +91,28 @@ const AppointmentsPage = () => {
               <td className="p-3 border-b border-gray-200">{appointment.date}</td>
               <td className="p-3 border-b border-gray-200">{appointment.time}</td>
               <td className="p-3 border-b border-gray-200">{appointment.patient}</td>
-              <td className="p-3 border-b border-gray-200">{appointment.status}</td>
-              <td className="p-3 border-b border-gray-200 flex space-x-2">
-                <BiShow
-                  className="text-blue-500 cursor-pointer"
-                  title="View Appointment"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent triggering row click
-                    handleRowClick(appointment.id); // Directly navigate to appointment details
-                  }}
-                />
-                <FaTrashAlt
-                  className="text-red-500 cursor-pointer"
-                  title="Delete Appointment"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent triggering row click
-                    handleConfirmDeleteClick(appointment, 'delete');
-                  }}
-                />
+              <td className="p-3 border-b border-gray-200 ">{appointment.status}</td>
+              <td className="p-3 border-b border-gray-200 ">
+                <div className='flex items-center gap-2'>
+                  <BiShow
+                    className="text-blue-500 cursor-pointer"
+                    title="View Appointment"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering row click
+                      handleRowClick(appointment.id); // Directly navigate to appointment details
+                    }}
+                  />
+                  <FaTrashAlt
+                    className="text-red-500 cursor-pointer"
+                    title="Delete Appointment"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering row click
+                      handleConfirmDeleteClick(appointment, 'delete');
+                    }}
+                  />
+                </div>
+
+                
               </td>
             </tr>
           ))}
