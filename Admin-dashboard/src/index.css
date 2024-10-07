@@ -12,3 +12,25 @@
     width: calc(100% - 256px); /* Adjust width when screen is md or larger */
 }
 }
+
+.swiper {
+  width:750px;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+  width: 250px;
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
