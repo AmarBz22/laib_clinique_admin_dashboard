@@ -1,4 +1,3 @@
-import React, { useContext } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import { BiHome, BiCalendar, BiShoppingBag, BiBook, BiStats } from 'react-icons/bi'; // Import necessary icons
 import { IoMdCloseCircle } from "react-icons/io";

@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import {  Navigate } from "react-router-dom";
 import bg from "../assets/bg-pink.webp"
 
 import eye from "../assets/eye-slash.svg"
