@@ -31,7 +31,7 @@ const Home = () => {
       
       
       {/* Grid layout for tables */}
-      <div className="grid xl:grid-cols-3 grid-cols-1  w-full">
+      <div className="grid xl:grid-cols-3 grid-cols-1 gap-4  w-full">
         {/* AppointmentsTable spans 2 columns */}
         <div className="lg:col-span-2"> 
           <AppointmentsTable />

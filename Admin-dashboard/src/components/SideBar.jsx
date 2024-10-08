@@ -1,9 +1,12 @@
-import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import { BiHome, BiCalendar, BiShoppingBag, BiBook, BiStats } from 'react-icons/bi'; // Import necessary icons
 import { IoMdCloseCircle } from "react-icons/io";
+import { clearUserAuthInfo } from '../../context/auth';
 
 const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
+  const handleLogout = ()=>{
+    clearUserAuthInfo()
+  }
   return (
     <aside className="md:static  fixed top-0 bottom-0 left-0 z-50 md:w-64 sm:w-1/2 w-3/4 bg-primary-pink h-full text-white transition-all duration-300">
       <nav className=" relative flex flex-col  p-4 md:items-start items-center h-screen">
@@ -78,7 +81,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
 
         {/* Optional: Logout Section */}
         <div className="mt-auto">
-          <button className="w-full bg-white text-primary-pink p-2 rounded transition hover:bg-primary-pink hover:text-white font-semibold">
+          <button onClick={handleLogout} className="w-full bg-white text-primary-pink p-2 rounded transition hover:bg-primary-pink hover:text-white font-semibold">
             Logout
           </button>
         </div>

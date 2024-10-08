@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const AppointmentsTable = () => {
   const appointments = [
@@ -14,9 +15,9 @@ const AppointmentsTable = () => {
     <div className="w-full mt-5 border border-gray-200 rounded-lg shadow-md"> {/* Full width for responsiveness */}
       <div className="flex justify-between items-center p-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold">Recent Appointments</h2>
-        <button className="bg-primary-pink text-white px-4 py-2 rounded transition hover:bg-light-pink font-semibold">
+        <Link to="/appointments"  className="bg-primary-pink text-white px-4 py-2 rounded transition hover:bg-light-pink font-semibold">
           See All
-        </button>
+        </Link>
       </div>
       <table className="w-full border-collapse bg-white">
         <thead>
