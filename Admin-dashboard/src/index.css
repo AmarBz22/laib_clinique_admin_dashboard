@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.responsive-div {
+    width: 100%; /* Default width for small screens */
+  }
+  
+@media (min-width: 768px) {
+.responsive-div {
+    width: calc(100% - 256px); /* Adjust width when screen is md or larger */
+}
+}
+
+
+
+.bg-image {
+  background-image: url('./assets/bg-pink.webp');
+  background-size: cover;
+  background-position: center;
+}
+
