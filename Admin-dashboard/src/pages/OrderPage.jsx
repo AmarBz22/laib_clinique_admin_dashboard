@@ -1,68 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaCheckCircle, FaTrashAlt } from 'react-icons/fa';
-import { AiFillCloseCircle } from 'react-icons/ai'; // Icon for closing the modal
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-
+import { AiFillCloseCircle } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const OrdersPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showModal, setShowModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null); // Store the order to confirm/delete
-  const [actionType, setActionType] = useState(''); // Store action type ('confirm' or 'delete')
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [actionType, setActionType] = useState('');
+  const [orders, setOrders] = useState([]);
 
-  const navigate = useNavigate(); // Hook to navigate
+  const navigate = useNavigate();
 
-  // Sample orders data
-  const orders = [
-    { 
-      id: 1, 
-      name: 'John Doe', 
-      status: 'Pending', 
-      phone: '123-456-7890',
-      items: ['Item A', 'Item B'], // List of items in the order
-      totalPrice: 59.99, // Total price of the order
-      location: '123 Main St, Anytown, USA' // Location of the order
-    },
-    { 
-      id: 2, 
-      name: 'Jane Smith', 
-      status: 'Completed', 
-      phone: '987-654-3210',
-      items: ['Item C'], // List of items in the order
-      totalPrice: 19.99, // Total price of the order
-      location: '456 Elm St, Anytown, USA' // Location of the order
-    },
-    { 
-      id: 3, 
-      name: 'Mike Johnson', 
-      status: 'Cancelled', 
-      phone: '555-555-5555',
-      items: ['Item D', 'Item E', 'Item F'], // List of items in the order
-      totalPrice: 89.99, // Total price of the order
-      location: '789 Oak St, Anytown, USA' // Location of the order
-    },
-    { 
-      id: 4, 
-      name: 'Emily Davis', 
-      status: 'Pending', 
-      phone: '444-444-4444',
-      items: ['Item G'], // List of items in the order
-      totalPrice: 39.99, // Total price of the order
-      location: '321 Pine St, Anytown, USA' // Location of the order
-    },
-  ];
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/api/order/getAllorders');
+        console.log('Orders fetched:', response.data); // Add this line to log the response
+        setOrders(response.data);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
   
+    fetchOrders();
+  }, []);
 
-  // Search and filter logic
+
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || order.status.toLowerCase() === filterStatus;
-    return matchesSearch && matchesStatus;
+    return filterStatus === 'all' || order.status.toLowerCase() === filterStatus;
   });
 
-  // Handle search and filter change
-  const handleSearchChange = (e) => setSearchTerm(e.target.value);
   const handleStatusChange = (e) => setFilterStatus(e.target.value);
 
   const handleConfirmDeleteClick = (order, action) => {
@@ -73,29 +42,33 @@ const OrdersPage = () => {
 
   const closeModal = () => setShowModal(false);
 
-  const handleAction = () => {
+  const handleAction = async () => {
     if (actionType === 'confirm') {
-      console.log(`Order ${selectedOrder.id} confirmed`);
+      try {
+        await axios.post(`http://localhost:4000/api/order/confirm/${selectedOrder.id}`);
+      } catch (error) {
+        console.error('Error confirming order:', error);
+      }
     } else if (actionType === 'delete') {
-      console.log(`Order ${selectedOrder.id} deleted`);
+      try {
+        await axios.delete(`http://localhost:4000/api/order/delete/${selectedOrder.id}`);
+        // Refresh orders after deletion
+        setOrders(orders.filter(order => order.id !== selectedOrder.id));
+      } catch (error) {
+        console.error('Error deleting order:', error);
+      }
     }
     closeModal();
   };
+
   const handleRowClick = (orderId) => {
-    navigate(`/orders/${orderId}`); // Navigate to appointment details
+    navigate(`/orders/${orderId}`);
   };
 
   return (
     <div className="md:p-6 flex flex-col px-4 justify-center items-center mt-20 mb-10">
       <h1 className="text-2xl font-semibold mb-8 text-center">Orders</h1>
       <div className="md:flex md:gap-0 md:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Search by order name"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="p-2 border rounded"
-        />
         <select
           value={filterStatus}
           onChange={handleStatusChange}
@@ -112,9 +85,7 @@ const OrdersPage = () => {
       </div>
 
       <div className="w-full mt-5 border border-gray-200 rounded-lg shadow-md">
-        <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold">Filtered Orders</h2>
-        </div>
+        
         <table className="w-full border-collapse bg-white">
           <thead>
             <tr>
@@ -125,30 +96,30 @@ const OrdersPage = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map(order => (
-              <tr key={order.id} className="hover:bg-gray-50 transition-colors cursor-pointer"
-              onClick={() => handleRowClick(order.id)}
-              >
-                <td className="p-3 border-b border-gray-200">{order.name}</td>
-                <td className="p-3 border-b border-gray-200">{order.phone}</td>
-                <td className="p-3 border-b border-gray-200">{order.status}</td>
-                <td className="p-3 border-b border-gray-200 ">
-                <div className='flex items-center gap-4'>
-                    <FaCheckCircle
-                      className="text-green-500 cursor-pointer"
-                      title="Confirm Order"
-                      onClick={() => handleConfirmDeleteClick(order, 'confirm')}
-                    />
-                    <FaTrashAlt
-                      className="text-red-500 cursor-pointer"
-                      title="Delete Order"
-                      onClick={() => handleConfirmDeleteClick(order, 'delete')}
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {filteredOrders.map(order => (
+    <tr key={order.id} className="hover:bg-gray-50 transition-colors cursor-pointer"
+        onClick={() => handleRowClick(order._id)}
+    >
+      <td className="p-3 border-b border-gray-200">{order.clientName}</td>
+      <td className="p-3 border-b border-gray-200">{order.phone}</td>
+      <td className="p-3 border-b border-gray-200">{order.status}</td>
+      <td className="p-3 border-b border-gray-200">
+        <div className='flex items-center gap-4'>
+          <FaCheckCircle
+            className="text-green-500 cursor-pointer"
+            title="Confirm Order"
+            onClick={(e) => { e.stopPropagation(); handleConfirmDeleteClick(order, 'confirm'); }}
+          />
+          <FaTrashAlt
+            className="text-red-500 cursor-pointer"
+            title="Delete Order"
+            onClick={(e) => { e.stopPropagation(); handleConfirmDeleteClick(order, 'delete'); }}
+          />
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
         </table>
       </div>
 

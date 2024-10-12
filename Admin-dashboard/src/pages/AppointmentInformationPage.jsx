@@ -1,48 +1,94 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // Import useParams
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { BACKEND_URL } from '../../constants/index';
 
 const AppointmentInformationPage = () => {
-  const { appointmentId } = useParams(); // Extract appointment ID from URL
-
-  // Static appointment data for testing (In real app, fetch this data using appointmentId)
-  const appointments = [
-    { id: 1, date: '2024-10-01', time: '10:00 AM', patient: { name: 'John Doe', address: '123 Main St, Springfield, IL', phone: '555-123-4567' }, status: 'In Progress' },
-    { id: 2, date: '2024-10-02', time: '11:00 AM', patient: { name: 'Jane Smith', address: '456 Elm St, Springfield, IL', phone: '555-987-6543' }, status: 'Pending' },
-    { id: 3, date: '2024-10-03', time: '01:00 PM', patient: { name: 'Michael Brown', address: '789 Oak St, Springfield, IL', phone: '555-123-7890' }, status: 'Review' },
-    { id: 4, date: '2024-10-04', time: '02:00 PM', patient: { name: 'Emma Johnson', address: '321 Pine St, Springfield, IL', phone: '555-654-3210' }, status: 'Completed' },
-  ];
-
+  const { appointmentId } = useParams();
   const [appointment, setAppointment] = useState(null);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [actionType, setActionType] = useState(null);
+  const navigate = useNavigate();
 
-  // Fetch the specific appointment based on the appointmentId
   useEffect(() => {
-    const fetchedAppointment = appointments.find(appt => appt.id === parseInt(appointmentId));
-    if (fetchedAppointment) {
-      setAppointment(fetchedAppointment);
-    }
+    const fetchAppointment = async () => {
+      if (!appointmentId) {
+        setMessage('Appointment ID is missing.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/appointments/${appointmentId}`);
+        setAppointment(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching appointment:', error);
+        setMessage('Error fetching appointment details.');
+        setLoading(false);
+      }
+    };
+
+    fetchAppointment();
   }, [appointmentId]);
 
-  const handleDateChange = (e) => {
-    setAppointment((prev) => ({ ...prev, date: e.target.value }));
+  const openModal = (type) => {
+    setActionType(type);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setActionType(null);
   };
 
   const handleTimeChange = (e) => {
-    setAppointment((prev) => ({ ...prev, time: e.target.value }));
+    const updatedTime = e.target.value;
+    setAppointment((prev) => ({ ...prev, time: updatedTime }));
   };
 
-  const handleConfirm = () => {
-    console.log(`Updated Appointment: ${appointment.date} at ${appointment.time}`);
-    setMessage('Appointment updated successfully!');
+  const handleConfirm = async () => {
+    try {
+      // Ensure you're sending the correct data to your API
+      await axios.put(`${BACKEND_URL}/api/appointments/confirm/${appointmentId}`, {
+        time: appointment.time,
+        status: 'Confirmed', // You might need to include this depending on your backend logic
+      });
+      setMessage('Appointment confirmed successfully!');
+      closeModal();
+      setTimeout(() => {
+        navigate('/appointments');
+      }, 2000);
+    } catch (error) {
+      console.error('Error updating appointment:', error.response?.data || error);
+      setMessage('Error updating appointment. ' + (error.response?.data?.message || ''));
+    }
+  };
+  
+
+  const handleCancel = async () => {
+    try {
+      await axios.put(`${BACKEND_URL}/api/appointments/cancel/${appointmentId}`);
+      setMessage('Appointment canceled successfully!');
+      setAppointment(null);
+      closeModal();
+      setTimeout(() => {
+        navigate('/appointments');
+      }, 2000);
+    } catch (error) {
+      console.error('Error canceling appointment:', error);
+      setMessage('Error canceling appointment. Please try again.');
+    }
   };
 
-  const handleCancel = () => {
-    console.log(`Appointment ${appointment.id} canceled`);
-    setMessage('Appointment canceled successfully!');
-  };
+  if (loading) {
+    return <p>Loading appointment details...</p>;
+  }
 
   if (!appointment) {
-    return <p>Loading appointment details...</p>;
+    return <p>No appointment found.</p>;
   }
 
   return (
@@ -54,9 +100,9 @@ const AppointmentInformationPage = () => {
           <label className="block mb-2">Patient Name:</label>
           <input
             type="text"
-            value={appointment.patient.name}
+            value={appointment.fullName}
             disabled
-            className="p-2 border rounded w-full"
+            className="p-2 border rounded w-full bg-gray-100"
           />
         </div>
 
@@ -64,9 +110,9 @@ const AppointmentInformationPage = () => {
           <label className="block mb-2">Patient Address:</label>
           <input
             type="text"
-            value={appointment.patient.address}
+            value={appointment.location}
             disabled
-            className="p-2 border rounded w-full"
+            className="p-2 border rounded w-full bg-gray-100"
           />
         </div>
 
@@ -74,40 +120,65 @@ const AppointmentInformationPage = () => {
           <label className="block mb-2">Phone Number:</label>
           <input
             type="text"
-            value={appointment.patient.phone}
+            value={appointment.phoneNumber}
             disabled
-            className="p-2 border rounded w-full"
+            className="p-2 border rounded w-full bg-gray-100"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2">Date:</label>
+          <label className="block mb-2">Chosen Date:</label>
           <input
             type="date"
-            value={appointment.date}
-            onChange={handleDateChange}
-            className="p-2 border rounded w-full"
+            value={appointment.date?.substring(0, 10)} // Ensures the correct date format for input
+            readOnly
+            className="p-2 border rounded w-full bg-gray-100"
           />
         </div>
 
         <div className="mb-4">
-            <label className="block mb-2">Time:</label>
-            <input
-                type="time"
-                value={appointment.time}
-                onChange={handleTimeChange}
-                className="p-2 border rounded w-full"
-            />
+          <label className="block mb-2">Time:</label>
+          <input
+            type="time"
+            value={appointment.time}
+            onChange={handleTimeChange}
+            className="p-2 border rounded w-full"
+          />
         </div>
 
-
         <div className="flex justify-end space-x-2">
-          <button className="bg-primary-pink text-white p-2 rounded" onClick={handleConfirm}>Confirm Changes</button>
-          <button className="bg-gray-400 text-white p-2 rounded" onClick={handleCancel}>Cancel</button>
+          <button className="bg-primary-pink text-white p-2 rounded" onClick={() => openModal('confirm')}>
+            Confirm Changes
+          </button>
+          <button className="bg-gray-400 text-white p-2 rounded" onClick={() => openModal('cancel')}>
+            Cancel
+          </button>
         </div>
 
         {message && <p className="mt-4 text-green-500">{message}</p>}
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-1/3">
+            <h3 className="text-lg font-semibold mb-4">{actionType === 'confirm' ? 'Confirm Appointment' : 'Cancel Appointment'}</h3>
+            <p className="mb-4">
+              Are you sure you want to {actionType === 'confirm' ? 'confirm' : 'cancel'} this appointment?
+            </p>
+            <div className="flex justify-end">
+              <button className="bg-gray-300 text-black px-4 py-2 rounded mr-2" onClick={closeModal}>
+                Cancel
+              </button>
+              <button
+                className={`px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-primary-pink text-white' : 'bg-red-500 text-white'}`}
+                onClick={actionType === 'confirm' ? handleConfirm : handleCancel}
+              >
+                {actionType === 'confirm' ? 'Confirm' : 'Cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

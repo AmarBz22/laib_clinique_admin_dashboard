@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import { BiShow } from 'react-icons/bi';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { BACKEND_URL } from '../../constants/index';
 
 const AppointmentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,42 +12,53 @@ const AppointmentsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [actionType, setActionType] = useState('');
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const navigate = useNavigate(); // Hook to navigate
+  const navigate = useNavigate();
 
-  // Mock data for appointments
-  const appointments = [
-    { id: 1, date: '2024-10-01', time: '10:00 AM', patient: 'John Doe', status: 'In Progress' },
-    { id: 2, date: '2024-10-02', time: '11:00 AM', patient: 'Jane Smith', status: 'Pending' },
-    { id: 3, date: '2024-10-03', time: '01:00 PM', patient: 'Michael Brown', status: 'Review' },
-    { id: 4, date: '2024-10-04', time: '02:00 PM', patient: 'Emma Johnson', status: 'Completed' },
-    { id: 5, date: '2024-10-05', time: '03:00 PM', patient: 'Sophia Wilson', status: 'In Progress' },
-  ];
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/appointments/get_appointment`);
+        setAppointments(response.data);
+      } catch (err) {
+        console.error('Error fetching appointments:', err);
+        setError('Error fetching appointments');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}/${month}/${day}`;
+  };
 
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
   const handleStatusChange = (e) => setFilterStatus(e.target.value);
-
   const handleConfirmDeleteClick = (appointment, action) => {
     setSelectedAppointment(appointment);
     setActionType(action);
     setShowModal(true);
   };
-
   const closeModal = () => setShowModal(false);
-
-  const handleAction = () => {
-    if (actionType === 'delete') {
-      console.log(`Appointment ${selectedAppointment.id} deleted`);
-    }
-    closeModal();
-  };
-
   const handleRowClick = (appointmentId) => {
-    navigate(`/appointments/${appointmentId}`); // Navigate to appointment details
+    navigate(`/appointments/${appointmentId}`);
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
-    <div className="md:p-6 flex flex-col  justify-center items-center mt-20 mb-10 px-2">
+    <div className="md:p-6 flex flex-col justify-center items-center mt-20 mb-10 px-2">
       <h1 className="text-2xl font-semibold mb-8 text-center">Appointments</h1>
 
       <div className="md:flex md:gap-0 md:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
@@ -66,58 +79,61 @@ const AppointmentsPage = () => {
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
         </select>
-        <div className='col-span-2 flex justify-center'>
-          <button className="w-[150px] bg-primary-pink text-white p-2 rounded">Add Appointment</button>
-        </div>
       </div>
 
-      <table className="w-full border-collapse bg-white rounded-lg shadow-md ">
-        <thead>
-          <tr>
-            <th className="text-gray-800 font-semibold p-3 text-left">Date</th>
-            <th className="text-gray-800 font-semibold p-3 text-left">Time</th>
-            <th className="text-gray-800 font-semibold p-3 text-left">Patient</th>
-            <th className="text-gray-800 font-semibold p-3 text-left">Status</th>
-            <th className="text-gray-800 font-semibold p-3 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {appointments.map((appointment) => (
-            <tr
-              key={appointment.id}
-              className="hover:bg-gray-50 transition-colors cursor-pointer"
-              onClick={() => handleRowClick(appointment.id)} // Navigate when row is clicked
-            >
-              <td className="p-3 border-b border-gray-200">{appointment.date}</td>
-              <td className="p-3 border-b border-gray-200">{appointment.time}</td>
-              <td className="p-3 border-b border-gray-200">{appointment.patient}</td>
-              <td className="p-3 border-b border-gray-200 ">{appointment.status}</td>
-              <td className="p-3 border-b border-gray-200 ">
-                <div className='flex items-center gap-2'>
-                  <BiShow
-                    className="text-blue-500 cursor-pointer"
-                    title="View Appointment"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent triggering row click
-                      handleRowClick(appointment.id); // Directly navigate to appointment details
-                    }}
-                  />
-                  <FaTrashAlt
-                    className="text-red-500 cursor-pointer"
-                    title="Delete Appointment"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent triggering row click
-                      handleConfirmDeleteClick(appointment, 'delete');
-                    }}
-                  />
-                </div>
-
-                
-              </td>
+      <div className='w-full mt-5 border border-gray-200 rounded-lg shadow-md'>
+        <table className="w-full border-collapse bg-white">
+          <thead>
+            <tr>
+              <th className="text-gray-800 font-semibold p-3 text-left">Date</th>
+              <th className="text-gray-800 font-semibold p-3 text-left">Phone Number</th>
+              <th className="text-gray-800 font-semibold p-3 text-left">Patient</th>
+              <th className="text-gray-800 font-semibold p-3 text-left">Status</th>
+              <th className="text-gray-800 font-semibold p-3 text-left">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {appointments.length > 0 ? (
+              appointments.map((appointment) => (
+                <tr
+                  key={appointment._id}
+                  className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => handleRowClick(appointment._id)}
+                >
+                  <td className="p-3 border-b border-gray-200">{formatDate(appointment.date)}</td>
+                  <td className="p-3 border-b border-gray-200">{appointment.phoneNumber}</td>
+                  <td className="p-3 border-b border-gray-200">{appointment.fullName}</td>
+                  <td className="p-3 border-b border-gray-200">{appointment.status}</td>
+                  <td className="p-3 border-b border-gray-200">
+                    <div className='flex items-center gap-2'>
+                      <BiShow
+                        className="text-blue-500 cursor-pointer"
+                        title="View Appointment"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRowClick(appointment._id);
+                        }}
+                      />
+                      <FaTrashAlt
+                        className="text-red-500 cursor-pointer"
+                        title="Delete Appointment"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleConfirmDeleteClick(appointment, 'delete');
+                        }}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center p-3">No appointments found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
