@@ -147,13 +147,22 @@ const AppointmentInformationPage = () => {
         </div>
 
         <div className="flex justify-end space-x-2">
-          <button className="bg-primary-pink text-white p-2 rounded" onClick={() => openModal('confirm')}>
-            Confirm Changes
-          </button>
-          <button className="bg-gray-400 text-white p-2 rounded" onClick={() => openModal('cancel')}>
-            Cancel
-          </button>
-        </div>
+  {appointment.status === 'Confirmed '||'Cancelled' ? (
+    <>
+      <button className="bg-primary-pink text-white p-2 rounded" onClick={() => openModal('confirm')}>
+        Confirm Changes
+      </button>
+      <button className="bg-gray-400 text-white p-2 rounded" onClick={() => openModal('cancel')}>
+        Cancel
+      </button>
+    </>
+  ) : (
+    <button className="bg-primary-pink text-white p-2 rounded" onClick={() => navigate('/appointments')}>
+      Back to Appointments
+    </button>
+  )}
+</div>
+
 
         {message && <p className="mt-4 text-green-500">{message}</p>}
       </div>

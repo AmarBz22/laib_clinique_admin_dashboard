@@ -123,7 +123,10 @@ const OrderInformationPage = () => {
           ) : (
             <button
               className="bg-primary-pink text-white px-4 py-2 rounded"
-              onClick={() => navigate('/orders')} // Redirect back to orders page
+              
+              onClick={() =>{
+                closeModal();
+                navigate('/orders')}} // Redirect back to orders page
             >
               Back to Orders
             </button>
