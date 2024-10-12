@@ -147,7 +147,13 @@ const AppointmentInformationPage = () => {
         </div>
 
         <div className="flex justify-end space-x-2">
-  {appointment.status === 'Confirmed '||'Cancelled' ? (
+  {appointment.status === 'Confirmed' || appointment.status === 'Cancelled' ? (
+    <>
+      <button className="bg-primary-pink text-white p-2 rounded" onClick={() => navigate('/appointments')}>
+        Back to Appointments
+      </button>
+    </>
+  ) : (
     <>
       <button className="bg-primary-pink text-white p-2 rounded" onClick={() => openModal('confirm')}>
         Confirm Changes
@@ -156,12 +162,9 @@ const AppointmentInformationPage = () => {
         Cancel
       </button>
     </>
-  ) : (
-    <button className="bg-primary-pink text-white p-2 rounded" onClick={() => navigate('/appointments')}>
-      Back to Appointments
-    </button>
   )}
 </div>
+
 
 
         {message && <p className="mt-4 text-green-500">{message}</p>}
