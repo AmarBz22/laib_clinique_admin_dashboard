@@ -4,7 +4,7 @@ import { BiMenu, BiSearch } from 'react-icons/bi';
 const Header = ({ toggleSidebar, isSidebarOpen }) => {
   return (
     <header
-      className={`${isSidebarOpen ? 'responsive-div ': 'w-full'} flex items-center  justify-between p-4 w- bg-white shadow-md h-20 fixed top-0  transition-all duration-300`}
+      className={`${isSidebarOpen ? 'responsive-div ': 'w-full'} flex items-center  justify-between p-4 w- bg-white shadow-md h-20 fixed top-0 md:left-64  transition-all duration-300`}
 
     // Adjust based on your sidebar width
     >
