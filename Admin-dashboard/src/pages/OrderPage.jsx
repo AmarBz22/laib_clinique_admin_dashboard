@@ -5,11 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const OrdersPage = () => {
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [type,setType] = useState("All")
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [actionType, setActionType] = useState('');
   const [orders, setOrders] = useState([]);
+  const [filteredOrders,setFiltredOrders] = useState([])
+  const [searchTerm, setSearchTerm] = useState('');
 
   const navigate = useNavigate();
 
@@ -19,6 +21,7 @@ const OrdersPage = () => {
         const response = await axios.get('http://localhost:4000/api/order/getAllorders');
         console.log('Orders fetched:', response.data); // Add this line to log the response
         setOrders(response.data);
+        setFiltredOrders(response.data)
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
@@ -27,12 +30,47 @@ const OrdersPage = () => {
     fetchOrders();
   }, []);
 
+  
+  const handleSearchChange = (e) =>{
+    setSearchTerm(e.target.value)
+    const searchTerm = e.target.value.toLowerCase();
+    const newdata = orders.filter(order => 
+      order.clientName.toLowerCase().startsWith(searchTerm)
+    );
+    setFiltredOrders(newdata);
+    setType("All")
 
-  const filteredOrders = orders.filter(order => {
-    return filterStatus === 'all' || order.status.toLowerCase() === filterStatus;
-  });
+  };
 
-  const handleStatusChange = (e) => setFilterStatus(e.target.value);
+  const handleAll = ()=>{
+    setType("All")    
+    setSearchTerm("")
+    setFiltredOrders(orders)
+
+  }
+
+  const handleConfrim = ()=>{
+    setType("Confirmed")    
+    setSearchTerm("")
+    const newdata = orders.filter(e => e.status === "Confirmed");        
+    setFiltredOrders(newdata)
+  }
+
+  const handleCancel = ()=>{
+    setType("Cancelled")
+    setSearchTerm("")
+    const newdata = orders.filter(e => e.status === "Cancelled");    
+    setFiltredOrders(newdata)
+
+  }
+
+  const handlePending = ()=>{
+    setType("Pending")
+    setSearchTerm("")
+    const newdata = orders.filter(e => e.status === "Pending");    
+    setFiltredOrders(newdata)
+
+  }
 
   const handleConfirmDeleteClick = (order, action) => {
     setSelectedOrder(order);
@@ -69,17 +107,20 @@ const OrdersPage = () => {
     <div className="md:p-6 flex flex-col px-4 justify-center items-center mt-20 mb-10">
       <h1 className="text-2xl font-semibold mb-8 text-center">Orders</h1>
       <div className="md:flex md:gap-0 md:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
-        <select
-          value={filterStatus}
-          onChange={handleStatusChange}
-          className="p-2 border rounded"
-        >
-          <option value="all">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-        <div className='col-span-2 flex justify-center'>
+        <input
+          type="text"
+          placeholder="Search by client name"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="p-2 border rounded md:order-1 order-1"
+        />
+        <div className='flex  md:justify-center justify-start items-center  md:order-2 col-span-2 md:mt-0 mt-4 order-3' >
+          <button onClick={handleAll} className={type==="All" ?'py-1 px-3  border-black rounded-l-md bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black rounded-l-md shadow-inner'}>All</button>
+          <button onClick={handleConfrim} className={type==="Confirmed" ?'py-1 px-3  border-black  bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black shadow-inner'}>Confirmed</button>
+          <button onClick={handlePending} className={type==="Pending" ? 'py-1 px-3  border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black   text-black shadow-inner'}>Pending</button>
+          <button  onClick={handleCancel} className={type==="Cancelled" ? 'py-1 px-3 rounded-r-md border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black rounded-r-md  text-black shadow-inner'}>Cancelled</button>
+        </div>
+        <div className='flex justify-center md:order-3 order-2'>
           <button className="w-[150px] bg-primary-pink text-white p-2 rounded">Add Order</button>
         </div>
       </div>
