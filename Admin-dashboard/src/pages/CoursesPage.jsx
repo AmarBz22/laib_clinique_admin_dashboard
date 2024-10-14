@@ -25,6 +25,8 @@ const CoursesPage = () => {
 
   // Filter courses based on search, type, and audience
   const filteredCourses = courses.filter(course => {
+    console.log(course);
+    
     return (
       (filterType === 'all' || course.type.toLowerCase() === filterType.toLowerCase()) &&
       (filterAudience === 'all' || course.audience.toLowerCase() === filterAudience.toLowerCase()) &&
@@ -37,8 +39,8 @@ const CoursesPage = () => {
       <h1 className="text-2xl font-semibold mb-8 text-center">Courses</h1>
 
       {/* Filters and Add Course Button */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-        <div className="flex space-x-4 mb-4 md:mb-0">
+      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between mb-4">
+        <div className="grid sm:grid-cols-3 grid-cols-1 sm:space-x-4 sm:gap-0 gap-4 ">
           <input
             type="text"
             placeholder="Search courses"
@@ -62,12 +64,12 @@ const CoursesPage = () => {
             className="p-2 border rounded"
           >
             <option value="all">All Audiences</option>
-            <option value="families and children">Families and Children</option>
-            <option value="specialists">Specialists</option>
+            <option value="family and children">Families and Children</option>
+            <option value="specialist">Specialists</option>
           </select>
         </div>
         <Link to='addCourse' >
-        <button className="bg-primary-pink text-white px-4 py-2 rounded mt-4 md:mt-0">
+        <button className="bg-primary-pink text-white px-4 py-2 rounded mt-4 xl:mt-0 self-end">
           Add Course
         </button>
         </Link>
@@ -80,7 +82,7 @@ const CoursesPage = () => {
           {filteredCourses.map((course, index) => {
             const photoUrl = course.photo.replace(/\\/g, '/'); // Replace backslashes with forward slashes
             return (
-              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:translate-y-[-5px]">
+              <div key={index} className="bg-light-gray-bg rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:translate-y-[-5px]">
                 <img
                   src={`http://localhost:4000/${photoUrl}`} // Ensure 'photo' is the correct field for image URLs
                   alt={course.title}

@@ -106,6 +106,7 @@ const OrderInformationPage = () => {
         {/* Action Buttons */}
         <div className="flex justify-center">
           {orderDetails.status === 'Pending' ? (
+          <div className='flex flex-col gap-4'>
             <div className="flex space-x-4">
               <button
                 className="bg-green-500 text-white px-4 py-2 rounded transition duration-300 hover:bg-white hover:text-green-500 border border-green-500"
@@ -118,6 +119,16 @@ const OrderInformationPage = () => {
                 onClick={() => openModal('cancel')}
               >
                 Cancel
+              </button>
+            </div>
+              <button
+                className="text-primary-pink font-bold hover:underline px-4 py-2 rounded"
+                
+                onClick={() =>{
+                  closeModal();
+                  navigate('/orders')}} // Redirect back to orders page
+              >
+                Back to Orders
               </button>
             </div>
           ) : (
@@ -144,16 +155,17 @@ const OrderInformationPage = () => {
             </p>
             <div className="flex justify-end">
               <button
-                className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
+                className="bg-gray-300 order-2 text-black px-4 py-2 rounded ml-2"
                 onClick={closeModal}
               >
-                Cancel
+                NO
               </button>
               <button
-                className={`px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
+                className={`order-1 px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
                 onClick={actionType === 'confirm' ? handleConfirm : handleCancel}
               >
-                {actionType === 'confirm' ? 'Confirm' : 'Cancel'}
+                YES
+                {/* {actionType === 'confirm' ? 'Confirm' : 'Cancel'} */}
               </button>
             </div>
           </div>

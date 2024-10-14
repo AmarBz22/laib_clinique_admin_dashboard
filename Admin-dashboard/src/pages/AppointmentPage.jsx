@@ -49,12 +49,22 @@ const AppointmentsPage = () => {
   const handleSearchChange = (e) =>{
     setSearchTerm(e.target.value)
     const searchTerm = e.target.value.toLowerCase();
-    const newdata = appointments.filter(appointment => 
-        appointment.fullName.toLowerCase().startsWith(searchTerm)
+    let newdata = appointments.filter(appointment => 
+        appointment.fullName.toLowerCase().startsWith(searchTerm) 
     );
+    console.log(newdata);
+
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    if(type !=="All")
+    {
+      newdata = newdata.filter(elem => elem.status === type)
+    }
+    console.log(newdata);
+    
     setFiltredAppointments(newdata);
-    setDate("")
-    setType("All")
 
   };
   const handleConfirmDeleteClick = (appointment, action) => {
@@ -66,52 +76,73 @@ const AppointmentsPage = () => {
 
   const handleAll = ()=>{
     setType("All")    
-    setDate("")
-    setSearchTerm("")
-    setFiltredAppointments(appointments)
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) 
+    );
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    setFiltredAppointments(newdata);
 
   }
 
   const handleConfrim = ()=>{
     setType("Confirmed")    
-    setDate("")
-    setSearchTerm("")
-    const newdata = appointments.filter(e => e.status === "Confirmed");    
-    setFiltredAppointments(newdata)
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) &&
+      appointment.status === "Confirmed"
+    );
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    setFiltredAppointments(newdata);
   }
 
   const handleCancel = ()=>{
     setType("Cancelled")
-    setDate("")
-    setSearchTerm("")
-    const newdata = appointments.filter(e => e.status === "Cancelled");    
-    setFiltredAppointments(newdata)
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) &&
+      appointment.status === "Cancelled"
+    );
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    setFiltredAppointments(newdata);
 
   }
 
   const handlePending = ()=>{
     setType("Pending")
-    setDate("")
-    setSearchTerm("")
-    const newdata = appointments.filter(e => e.status === "Pending");    
-    setFiltredAppointments(newdata)
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) &&
+      appointment.status === "Pending"
+    );
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    setFiltredAppointments(newdata);
 
   }
 
   const handleDate = (e)=>{
     setDate(e.target.value)
-    const date = e.target.value
-    if(date!=="")
+    const newdate = e.target.value
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) 
+    );
+    if(newdate != "")
     {
-      setType("All")
-      setSearchTerm("")
-      const newdata = appointments.filter(e => e.date === date);    
-      setFiltredAppointments(newdata)
-    }else{
-      setType("All")
-      setSearchTerm("")
-      setFiltredAppointments(appointments)
+      newdata = newdata.filter(elem => elem.date === newdate)
     }
+    if(type !=="All")
+    {
+      newdata = newdata.filter(elem => elem.status === type)
+    }
+    setFiltredAppointments(newdata);
     
 
   }
@@ -130,7 +161,7 @@ const AppointmentsPage = () => {
     <div className="md:p-6 flex flex-col justify-center items-center mt-20 mb-10 px-2">
       <h1 className="text-2xl font-semibold mb-8 text-center">Appointments</h1>
 
-      <div className="md:flex md:gap-0 md:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
+      <div className="lg:flex lg:gap-0 lg:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
         <input
           type="text"
           placeholder="Search by patient name"
@@ -138,16 +169,16 @@ const AppointmentsPage = () => {
           onChange={handleSearchChange}
           className="p-2 border rounded order-1"
         />
-        <div className='flex  md:justify-center justify-start items-center  md:order-2 order-3 col-span-2 md:mt-0 mt-4'>
+        <div className='flex  justify-center  items-center  lg:order-2 order-3 col-span-2 lg:mt-0 mt-4'>
           <button onClick={handleAll} className={type==="All" ?'py-1 px-3  border-black rounded-l-md bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black rounded-l-md shadow-inner'}>All</button>
           <button onClick={handleConfrim} className={type==="Confirmed" ?'py-1 px-3  border-black  bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black shadow-inner'}>Confirmed</button>
           <button onClick={handlePending} className={type==="Pending" ? 'py-1 px-3  border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black   text-black shadow-inner'}>Pending</button>
           <button  onClick={handleCancel} className={type==="Cancelled" ? 'py-1 px-3 rounded-r-md border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black rounded-r-md  text-black shadow-inner'}>Cancelled</button>
         </div>
-        <input type='date' value={date} onChange={(e)=>{handleDate(e)}} placeholder='filter by Date' className='md:order-3 order-2 p-2 border rounded '/>          
+        <input type='date' value={date} onChange={(e)=>{handleDate(e)}} placeholder='filter by Date' className='lg:order-3 order-2 p-2 border rounded '/>          
       </div>
 
-      <div className='w-full mt-5 border border-gray-200 rounded-lg shadow-md'>
+      <div className='mt-5 border border-gray-200 w-screen md:w-full overflow-x-auto rounded-lg shadow-md'>
         <table className="w-full border-collapse bg-white">
           <thead>
             <tr>

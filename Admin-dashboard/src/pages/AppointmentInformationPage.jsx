@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BACKEND_URL } from '../../constants/index';
+import { toast } from 'react-toastify';
 
 const AppointmentInformationPage = () => {
   const { appointmentId } = useParams();
@@ -51,16 +52,22 @@ const AppointmentInformationPage = () => {
 
   const handleConfirm = async () => {
     try {
-      // Ensure you're sending the correct data to your API
-      await axios.put(`${BACKEND_URL}/api/appointments/confirm/${appointmentId}`, {
-        time: appointment.time,
-        status: 'Confirmed', // You might need to include this depending on your backend logic
-      });
-      setMessage('Appointment confirmed successfully!');
-      closeModal();
-      setTimeout(() => {
-        navigate('/appointments');
-      }, 2000);
+      if(!appointment.time)
+      {
+        toast.error('Please Select the time to confirm the order'); 
+        closeModal()
+      }
+      else{
+        await axios.put(`${BACKEND_URL}/api/appointments/confirm/${appointmentId}`, {
+          time: appointment.time,
+          status: 'Confirmed', // You might need to include this depending on your backend logic
+        });
+        setMessage('Appointment confirmed successfully!');
+        closeModal();
+        setTimeout(() => {
+          navigate('/appointments');
+        }, 2000);
+      }      
     } catch (error) {
       console.error('Error updating appointment:', error.response?.data || error);
       setMessage('Error updating appointment. ' + (error.response?.data?.message || ''));
@@ -135,14 +142,24 @@ const AppointmentInformationPage = () => {
             className="p-2 border rounded w-full bg-gray-100"
           />
         </div>
+        <div className="mb-4">
+          <label className="block mb-2">Status:</label>
+          <input
+            type="text"
+            value={appointment.status} // Ensures the correct date format for input
+            readOnly
+            className="p-2 border rounded w-full bg-gray-100"
+          />
+        </div>
 
         <div className="mb-4">
           <label className="block mb-2">Time:</label>
           <input
             type="time"
+            disabled={appointment.status !== 'Pending'}
             value={appointment.time}
             onChange={handleTimeChange}
-            className="p-2 border rounded w-full"
+            className={appointment.status !== 'Pending' ? "p-2 border rounded w-full bg-gray-100" :'p-2 border rounded w-full' }
           />
         </div>
 
@@ -156,7 +173,7 @@ const AppointmentInformationPage = () => {
   ) : (
     <>
       <button className="bg-primary-pink text-white p-2 rounded" onClick={() => openModal('confirm')}>
-        Confirm Changes
+        Confirm 
       </button>
       <button className="bg-gray-400 text-white p-2 rounded" onClick={() => openModal('cancel')}>
         Cancel
@@ -178,14 +195,16 @@ const AppointmentInformationPage = () => {
               Are you sure you want to {actionType === 'confirm' ? 'confirm' : 'cancel'} this appointment?
             </p>
             <div className="flex justify-end">
-              <button className="bg-gray-300 text-black px-4 py-2 rounded mr-2" onClick={closeModal}>
-                Cancel
+              <button className=" order-2 bg-gray-300 text-black px-4 py-2 rounded ml-2" onClick={closeModal}>
+                {/* Cancel */}
+                NO
               </button>
               <button
-                className={`px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-primary-pink text-white' : 'bg-red-500 text-white'}`}
+                className={` order-1 px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-primary-pink text-white' : 'bg-red-500 text-white'}`}
                 onClick={actionType === 'confirm' ? handleConfirm : handleCancel}
               >
-                {actionType === 'confirm' ? 'Confirm' : 'Cancel'}
+                {/* {actionType === 'confirm' ? 'Confirm' : 'Cancel'} */}
+                Yes
               </button>
             </div>
           </div>
