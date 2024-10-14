@@ -117,23 +117,21 @@ const OrdersPage = () => {
   return (
     <div className="md:p-6 flex flex-col px-4 justify-center items-center mt-20 mb-10">
       <h1 className="text-2xl font-semibold mb-8 text-center">Orders</h1>
-      <div className="lg:flex lg:gap-0 lg:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
+      <div className="md:flex md:gap-0 md:justify-between w-full items-center  grid grid-cols-2 gap-4 mb-4">
         <input
           type="text"
           placeholder="Search by client name"
           value={searchTerm}
           onChange={handleSearchChange}
-          className="p-2 border rounded lg:order-1 order-1"
+          className="p-2 border rounded md:order-1 order-1 md:col-span-0 col-span-2 md:mx-0 mx-8 "
         />
-        <div className='flex  justify-center tems-center  lg:order-2 col-span-2 lg:mt-0 mt-4 order-3' >
+        <div className='flex  justify-center tems-center  md:order-2 col-span-2 md:mt-0 mt-4 order-3' >
           <button onClick={handleAll} className={type==="All" ?'py-1 px-3  border-black rounded-l-md bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black rounded-l-md shadow-inner'}>All</button>
           <button onClick={handleConfrim} className={type==="Confirmed" ?'py-1 px-3  border-black  bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black shadow-inner'}>Confirmed</button>
           <button onClick={handlePending} className={type==="Pending" ? 'py-1 px-3  border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black   text-black shadow-inner'}>Pending</button>
           <button  onClick={handleCancel} className={type==="Cancelled" ? 'py-1 px-3 rounded-r-md border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black rounded-r-md  text-black shadow-inner'}>Cancelled</button>
         </div>
-        <div className='flex justify-end lg:order-3 order-2'>
-          <button className="lg:w-[150px] sm:w-[250px] w-[150px] bg-primary-pink text-white p-2 rounded">Add Order</button>
-        </div>
+        
       </div>
 
       <div className="md:w-full mt-5 border border-gray-200 rounded-lg shadow-md overflow-x-auto w-screen">
