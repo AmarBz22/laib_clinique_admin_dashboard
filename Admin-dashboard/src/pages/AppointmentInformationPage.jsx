@@ -203,7 +203,7 @@ const AppointmentInformationPage = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-1/3">
+          <div className="bg-white rounded-lg p-6  w-94">
             <h3 className="text-lg font-semibold mb-4">{actionType === 'confirm' ? 'Confirm Appointment' : 'Cancel Appointment'}</h3>
             <p className="mb-4">
               Are you sure you want to {actionType === 'confirm' ? 'confirm' : 'cancel'} this appointment?
