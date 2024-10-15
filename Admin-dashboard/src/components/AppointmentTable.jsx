@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { BACKEND_URL } from '../../constants/index'; // Adjust the import path as needed
+import { toast } from 'react-toastify';
 
 const AppointmentsTable = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/appointments/get_appointment`);
         setAppointments(response.data);
-      } catch (err) {
-        setError('Error fetching appointments');
-      } finally {
+      } catch (error) {
+        if(error.response?.data?.message)
+          {
+              toast.error(error.response.data.message)
+          }
+          else{
+              toast.error(error.message)
+          }      
+        } finally {
         setLoading(false);
       }
     };
@@ -24,7 +30,6 @@ const AppointmentsTable = () => {
   }, []);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
 
   // Limit to the first 6 appointments and format the date
   const limitedAppointments = appointments.slice(0, 6).map(appointment => ({

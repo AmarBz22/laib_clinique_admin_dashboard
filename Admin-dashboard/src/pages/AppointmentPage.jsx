@@ -1,31 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
-import { AiFillCloseCircle } from 'react-icons/ai';
 import { BiShow } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BACKEND_URL } from '../../constants/index';
+import { toast } from 'react-toastify';
 
 const AppointmentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [actionType, setActionType] = useState('');
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const [type,setType] = useState("All")
   const navigate = useNavigate();
+  const [filtredAppointments , setFiltredAppointments] = useState([])
+  const [date,setDate] = useState("")
+  const [error,setError] = useState(null)
+
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
+        setError(null)
         const response = await axios.get(`${BACKEND_URL}/api/appointments/get_appointment`);
         setAppointments(response.data);
-      } catch (err) {
-        console.error('Error fetching appointments:', err);
-        setError('Error fetching appointments');
+        setFiltredAppointments(response.data)
+      } catch (error) {
+        if(error.response?.data?.message)
+          {
+              toast.error(error.response.data.message)
+              setError(error.response.data.message)
+          }
+          else{
+              toast.error(error.message)
+              setError(error.message)
+
+          }
       } finally {
         setLoading(false);
       }
@@ -42,46 +54,161 @@ const AppointmentsPage = () => {
     return `${year}/${month}/${day}`;
   };
 
-  const handleSearchChange = (e) => setSearchTerm(e.target.value);
-  const handleStatusChange = (e) => setFilterStatus(e.target.value);
+  const handleSearchChange = (e) =>{
+    setSearchTerm(e.target.value)
+    const searchTerm = e.target.value.toLowerCase();
+    let newdata = appointments.filter(appointment => 
+        appointment.fullName.toLowerCase().startsWith(searchTerm) 
+    );
+    console.log(newdata);
+
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    if(type !=="All")
+    {
+      newdata = newdata.filter(elem => elem.status === type)
+    }
+    console.log(newdata);
+    
+    setFiltredAppointments(newdata);
+
+  };
   const handleConfirmDeleteClick = (appointment, action) => {
     setSelectedAppointment(appointment);
     setActionType(action);
     setShowModal(true);
   };
+
+
+  const handleAll = ()=>{
+    setType("All")    
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) 
+    );
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    setFiltredAppointments(newdata);
+
+  }
+
+  const handleConfrim = ()=>{
+    setType("Confirmed")    
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) &&
+      appointment.status === "Confirmed"
+    );
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    setFiltredAppointments(newdata);
+  }
+
+  const handleCancel = ()=>{
+    setType("Cancelled")
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) &&
+      appointment.status === "Cancelled"
+    );
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    setFiltredAppointments(newdata);
+
+  }
+
+  const handlePending = ()=>{
+    setType("Pending")
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) &&
+      appointment.status === "Pending"
+    );
+    if(date != "")
+    {
+      newdata = newdata.filter(elem => elem.date === date)
+    }
+    setFiltredAppointments(newdata);
+
+  }
+
+  const handleDate = (e)=>{
+    setDate(e.target.value)
+    const newdate = e.target.value
+    let newdata = appointments.filter(appointment => 
+      appointment.fullName.toLowerCase().startsWith(searchTerm) 
+    );
+    if(newdate != "")
+    {
+      newdata = newdata.filter(elem => elem.date === newdate)
+    }
+    if(type !=="All")
+    {
+      newdata = newdata.filter(elem => elem.status === type)
+    }
+    setFiltredAppointments(newdata);
+    
+
+  }
   const closeModal = () => setShowModal(false);
+
+  const handleAction = async () => {  
+      try {
+        const response = await axios.delete(`${BACKEND_URL}/api/appointments/${selectedAppointment._id}`);
+        toast.success(response.data.message)
+        // Refresh orders after deletion
+        console.log(response.data);
+        
+        setAppointments(appointments.filter(order => order._id !== selectedAppointment._id));
+        setFiltredAppointments(filtredAppointments.filter(order => order._id !== selectedAppointment._id));
+      } catch (error) {
+        if(error.response?.data?.message)
+        {
+            toast.error(error.response.data.message)
+        }
+        else{
+            toast.error(error.message)
+        }
+      }
+    closeModal();
+  };
+
   const handleRowClick = (appointmentId) => {
     navigate(`/appointments/${appointmentId}`);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) {
+    return <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>;
+  }
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
+
 
   return (
     <div className="md:p-6 flex flex-col justify-center items-center mt-20 mb-10 px-2">
       <h1 className="text-2xl font-semibold mb-8 text-center">Appointments</h1>
 
-      <div className="md:flex md:gap-0 md:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
+      <div className="lg:flex lg:gap-0 lg:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
         <input
           type="text"
           placeholder="Search by patient name"
           value={searchTerm}
           onChange={handleSearchChange}
-          className="p-2 border rounded"
+          className="p-2 border rounded order-1"
         />
-        <select
-          value={filterStatus}
-          onChange={handleStatusChange}
-          className="p-2 border rounded"
-        >
-          <option value="all">All Statuses</option>
-          <option value="upcoming">Upcoming</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+        <div className='flex  justify-center  items-center  lg:order-2 order-3 col-span-2 lg:mt-0 mt-4'>
+          <button onClick={handleAll} className={type==="All" ?'py-1 px-3  border-black rounded-l-md bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black rounded-l-md shadow-inner'}>All</button>
+          <button onClick={handleConfrim} className={type==="Confirmed" ?'py-1 px-3  border-black  bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black shadow-inner'}>Confirmed</button>
+          <button onClick={handlePending} className={type==="Pending" ? 'py-1 px-3  border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black   text-black shadow-inner'}>Pending</button>
+          <button  onClick={handleCancel} className={type==="Cancelled" ? 'py-1 px-3 rounded-r-md border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black rounded-r-md  text-black shadow-inner'}>Cancelled</button>
+        </div>
+        <input type='date' value={date} onChange={(e)=>{handleDate(e)}} placeholder='filter by Date' className='lg:order-3 order-2 p-2 border rounded '/>          
       </div>
 
-      <div className='w-full mt-5 border border-gray-200 rounded-lg shadow-md'>
+      <div className='mt-5 border border-gray-200 w-screen md:w-full overflow-x-auto rounded-lg shadow-md'>
         <table className="w-full border-collapse bg-white">
           <thead>
             <tr>
@@ -93,8 +220,8 @@ const AppointmentsPage = () => {
             </tr>
           </thead>
           <tbody>
-            {appointments.length > 0 ? (
-              appointments.map((appointment) => (
+            {filtredAppointments.length > 0 ? (
+              filtredAppointments.map((appointment) => (
                 <tr
                   key={appointment._id}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
@@ -134,6 +261,33 @@ const AppointmentsPage = () => {
           </tbody>
         </table>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-lg font-semibold mb-4">Confirm Action</h2>
+            <p className="mb-4">
+              Are you sure you want to delete this appointment?
+            </p>
+            <div className="flex justify-end">
+              <button
+                className="text-gray-500 order-2 hover:text-gray-700 ml-4"
+                onClick={closeModal}
+              >
+                NO
+              </button>
+              <button
+                className={`${
+                  actionType === 'confirm' ? 'bg-green-500' : 'bg-red-500'
+                } text-white px-4 py-2 rounded order-1`}
+                onClick={handleAction}
+              >
+                  YES
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

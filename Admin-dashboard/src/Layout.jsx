@@ -25,7 +25,7 @@ return (
         <div >
         {isSidebarOpen && <SideBar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}/>}
         </div>
-        <div className="w-full">
+        <div className={isSidebarOpen ? "md:ml-64 w-full"  : "w-full "}>
             <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
             {children}
         </div>  

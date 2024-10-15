@@ -1,22 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { BACKEND_URL } from '../../constants';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterAudience, setFilterAudience] = useState('all');
-
+  const [isLoading,setLoading]=useState(true)
+  const [error,setError] = useState(null)
   // Fetch courses from the backend
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/trainings/get_training'); // Update the URL to your backend endpoint
+        setError(null)
+        const response = await axios.get(`${BACKEND_URL}/api/trainings/get_training`); // Update the URL to your backend endpoint
         setCourses(response.data);
-        console.log(response.data);
       } catch (error) {
-        console.error('Error fetching courses:', error);
+        if(error.response?.data?.message)
+          {
+              toast.error(error.response.data.message)
+              setError(error.response.data.message)
+          }
+          else{
+              toast.error(error.message)
+              setError(error.message)
+          }
+      }finally{
+        setLoading(false)
       }
     };
 
@@ -24,21 +37,25 @@ const CoursesPage = () => {
   }, []);
 
   // Filter courses based on search, type, and audience
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = courses.filter(course => {    
     return (
       (filterType === 'all' || course.type.toLowerCase() === filterType.toLowerCase()) &&
       (filterAudience === 'all' || course.audience.toLowerCase() === filterAudience.toLowerCase()) &&
       (course.title.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   });
+  
+  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>)
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
+
 
   return (
     <div className="p-6 mt-20">
       <h1 className="text-2xl font-semibold mb-8 text-center">Courses</h1>
 
       {/* Filters and Add Course Button */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-        <div className="flex space-x-4 mb-4 md:mb-0">
+      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between mb-4">
+        <div className="grid sm:grid-cols-3 grid-cols-1 sm:space-x-4 sm:gap-0 gap-4 ">
           <input
             type="text"
             placeholder="Search courses"
@@ -62,12 +79,12 @@ const CoursesPage = () => {
             className="p-2 border rounded"
           >
             <option value="all">All Audiences</option>
-            <option value="families and children">Families and Children</option>
-            <option value="specialists">Specialists</option>
+            <option value="family and children">Families and Children</option>
+            <option value="specialist">Specialists</option>
           </select>
         </div>
         <Link to='addCourse' >
-        <button className="bg-primary-pink text-white px-4 py-2 rounded mt-4 md:mt-0">
+        <button className="bg-primary-pink text-white px-4 py-2 rounded mt-4 xl:mt-0 self-end">
           Add Course
         </button>
         </Link>
@@ -80,7 +97,7 @@ const CoursesPage = () => {
           {filteredCourses.map((course, index) => {
             const photoUrl = course.photo.replace(/\\/g, '/'); // Replace backslashes with forward slashes
             return (
-              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:translate-y-[-5px]">
+              <div key={index} className="bg-light-gray-bg rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:translate-y-[-5px]">
                 <img
                   src={`http://localhost:4000/${photoUrl}`} // Ensure 'photo' is the correct field for image URLs
                   alt={course.title}
@@ -101,9 +118,9 @@ const CoursesPage = () => {
                   </p>
                   <p className="text-sm text-muted-gray-text mb-2">Audience: {course.audience}</p>
                   <p className="text-sm text-muted-gray-text mb-2">Price: {course.price === 0 ? 'Free' : `$${course.price}`}</p>
-                  <button className="bg-primary-pink text-white px-4 py-2 rounded mt-2">
-                    Learn More
-                  </button>
+                  <Link to={"/courses/"+course._id} className="bg-primary-pink text-white px-4 py-2 rounded mt-2">
+                    See More
+                  </Link>
                 </div>
               </div>
             );

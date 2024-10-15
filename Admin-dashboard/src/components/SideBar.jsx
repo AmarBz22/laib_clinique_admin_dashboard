@@ -4,25 +4,18 @@ import { BiHome, BiCalendar, BiShoppingBag, BiBook, BiStats } from 'react-icons/
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 import { clearUserAuthInfo } from '../../context/auth';
+import { useNavigate } from 'react-router-dom';
 
 const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
-  const [isLoading, setIsLoading] = useState(false); // State to handle loading state
-  const navigate = useNavigate(); // Initialize useNavigate for redirection
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    setIsLoading(true); // Show loading spinner
-    clearUserAuthInfo(); // Clear the auth information
-
-    // Simulate a delay for the loading spinner (optional, for effect)
-    setTimeout(() => {
-      setIsLoading(false); // Hide loading spinner
-      navigate('/login'); // Redirect to the login page
-    }, 1000); // 1 second delay, adjust as needed
-  };
-
+  const handleLogout = () => {  
+    clearUserAuthInfo(); // Clear user authentication info
+    navigate('/login');  // Redirect to login page
+};
   return (
-    <aside className="md:static fixed top-0 bottom-0 left-0 z-50 md:w-64 sm:w-1/2 w-3/4 bg-primary-pink h-full text-white transition-all duration-300">
-      <nav className="relative flex flex-col p-4 md:items-start items-center h-screen">
+    <aside className="md:fixed  fixed top-0 h-full left-0 z-50 md:w-64 sm:w-1/2 w-3/4 bg-primary-pink  text-white transition-all duration-300">
+      <nav className=" relative flex flex-col  p-4 md:items-start items-center h-screen">
         {/* Logo Section */}
         <div className="flex justify-center items-center w-full">
           <div className="flex items-center mb-6">

@@ -1,20 +1,56 @@
-import  { useState } from 'react';
+import  { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, useParams } from 'react-router-dom'; // Import useNavigate
 import { toast } from 'react-toastify';
 import { BACKEND_URL } from '../../constants';
 
-const AddTraining = () => {
-  const [training, setTraining] = useState({
-    title: '',
-    description: '',
-    type: 'free',
-    audience: 'family and children',
-    price: '',
-    date: '',
-    places: '',
-    photo: null,
-  });
+const EditCourse = () => {
+    const [training, setTraining] = useState({
+        title: '',
+        description: '',
+        type: 'free',
+        audience: 'family and children',
+        price: '',
+        date: '',
+        places: '',
+        photo: null,
+      });
+    const { courseId } = useParams(); 
+    const [isLoading,setLoading]=useState(true)
+    const [error,setError] = useState(null)
+    useEffect(() => {
+        const fetchCourse = async () => {
+          try {
+            setError(null)
+            const response = await axios.get(`${BACKEND_URL}/api/trainings/${courseId}`); // Update the URL to your backend endpoint            
+            const updatedData = {
+                ...response.data, // Spread the rest of the response data
+                photo: response.data.photo.replace(/\\/g, '/') ,// Modify only the photo field
+                date : response.data.date.slice(0,10)
+              };            
+            
+            setTraining(updatedData);  
+                      
+          } catch (error) {
+            if(error.response?.data?.message)
+            {
+                toast.error(error.response.data.message)
+                setError(error.response.data.message)
+            }
+            else{
+                toast.error(error.message)
+                setError(error.message)
+            }
+          }finally{
+            setLoading(false)
+          }
+        };
+
+        
+    
+        fetchCourse();
+      }, []);
+  
   const navigate = useNavigate(); // Initialize navigate
 
   const handleChange = (e) => {
@@ -46,10 +82,7 @@ const AddTraining = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!training.photo) {
-      toast.error('Please upload a training image.');
-      return;
-    }
+    
 
     const formData = new FormData();
     formData.append('title', training.title || '');
@@ -59,18 +92,21 @@ const AddTraining = () => {
     formData.append('price', training.price.toString()); // Convert price to string
     formData.append('date', training.date || '');
     formData.append('places', training.places.toString()); // Convert places to string
-    formData.append('photo', training.photo); // Add photo file
+    if (training.photo) {
+      formData.append('photo', training.photo); // Add photo file
+    }
+    
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/trainings/create_training`, formData, {
+      const response = await axios.put(`${BACKEND_URL}/api/trainings/update/${courseId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      });      
-      if(response.statusText==="Created")
+      });
+      if(response.statusText==="OK")
       {
-        toast.success('Training added successfully!'); 
-        navigate('/courses'); 
+        toast.success('Training updated successfully!'); 
+        navigate(`/courses/${courseId}`);
       }
     } catch (error) {
       if(error.response?.data?.message)
@@ -79,13 +115,16 @@ const AddTraining = () => {
       }
       else{
           toast.error(error.message)
-      }   
+      }
     }
   };
 
+  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>)
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
+
   return (
     <div className="p-6 mt-20">
-      <h1 className="text-2xl font-semibold mb-4 text-center">Add Training</h1>
+      <h1 className="text-2xl font-semibold mb-4 text-center">Edit Training</h1>
       <div className="border border-gray-300 shadow-lg p-4 rounded-lg mb-6 bg-white">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -172,7 +211,7 @@ const AddTraining = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Training Image:</label>
+            <label className="block mb-2">Training Image: <span className='text-[12px] text-red-600 font-bold'>if you want to let the previous image don't upload a new one</span></label>
             <input
               type="file"
               name="photo"
@@ -183,14 +222,12 @@ const AddTraining = () => {
           </div>
           <div className="flex justify-end space-x-2">
             <button type="submit" className="bg-primary-pink text-white p-2 rounded">
-              Add Training
+              Update Training
             </button>
             <button
               type="button"
               className="bg-gray-400 text-white p-2 rounded"
-              onClick={() =>
-                navigate('/courses')
-              }
+              onClick={() =>{navigate('/courses/'+courseId)}}
             >
               Cancel
             </button>
@@ -201,4 +238,4 @@ const AddTraining = () => {
   );
 };
 
-export default AddTraining;
+export default EditCourse;

@@ -21,3 +21,12 @@
   background-position: center;
 }
 
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #FF5E7E;
+}
+::-webkit-scrollbar-track {
+  background-color: #F9A8D4;
+}

@@ -1,20 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom for routing
 import axios from 'axios';
 import { BACKEND_URL } from '../../constants/index'; // Adjust the import path as needed
+import { toast } from 'react-toastify';
 
 const OrdersTable = () => {
   const [orders, setOrders] = useState([]); // State to hold orders
   const [loading, setLoading] = useState(true); // State to handle loading
-  const [error, setError] = useState(null); // State to handle errors
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/order/getAllorders`); // Fetch orders from the backend
         setOrders(response.data); // Set orders from the response
-      } catch (err) {
-        setError('Error fetching orders'); // Set error message
+      } catch (error) {
+        if(error.response?.data?.message)
+          {
+              toast.error(error.response.data.message)
+          }
+          else{
+              toast.error(error.message)
+          } 
       } finally {
         setLoading(false); // Set loading to false
       }
@@ -24,7 +30,6 @@ const OrdersTable = () => {
   }, []);
 
   if (loading) return <div>Loading...</div>; // Display loading state
-  if (error) return <div>{error}</div>; // Display error message
 
   return (
     <div className="w-full mt-5 border border-gray-200 rounded-lg shadow-md">
