@@ -17,11 +17,13 @@ const AppointmentsPage = () => {
   const navigate = useNavigate();
   const [filtredAppointments , setFiltredAppointments] = useState([])
   const [date,setDate] = useState("")
+  const [error,setError] = useState(null)
 
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
+        setError(null)
         const response = await axios.get(`${BACKEND_URL}/api/appointments/get_appointment`);
         setAppointments(response.data);
         setFiltredAppointments(response.data)
@@ -29,9 +31,12 @@ const AppointmentsPage = () => {
         if(error.response?.data?.message)
           {
               toast.error(error.response.data.message)
+              setError(error.response.data.message)
           }
           else{
               toast.error(error.message)
+              setError(error.message)
+
           }
       } finally {
         setLoading(false);
@@ -153,7 +158,7 @@ const AppointmentsPage = () => {
 
   const handleAction = async () => {  
       try {
-        const response = await axios.delete(`http://localhost:4000/api/appointments/${selectedAppointment._id}`);
+        const response = await axios.delete(`${BACKEND_URL}/api/appointments/${selectedAppointment._id}`);
         toast.success(response.data.message)
         // Refresh orders after deletion
         console.log(response.data);
@@ -176,7 +181,11 @@ const AppointmentsPage = () => {
     navigate(`/appointments/${appointmentId}`);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>;
+  }
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
+
 
   return (
     <div className="md:p-6 flex flex-col justify-center items-center mt-20 mb-10 px-2">

@@ -1,4 +1,3 @@
-import React from 'react';
 import Card from '../components/Card';
 import AppointmentsTable from '../components/AppointmentTable';
 import OrdersTable from '../components/orderTable';

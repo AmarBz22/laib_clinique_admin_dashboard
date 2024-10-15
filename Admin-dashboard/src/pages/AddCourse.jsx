@@ -2,6 +2,7 @@ import  { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { toast } from 'react-toastify';
+import { BACKEND_URL } from '../../constants';
 
 const AddTraining = () => {
   const [training, setTraining] = useState({
@@ -61,12 +62,12 @@ const AddTraining = () => {
     formData.append('photo', training.photo); // Add photo file
 
     try {
-      const response = await axios.post('http://localhost:4000/api/trainings/create_training', formData, {
+      const response = await axios.post(`${BACKEND_URL}/api/trainings/create_training`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      });
-      if(response.statusText==="OK")
+      });      
+      if(response.statusText==="Created")
       {
         toast.success('Training added successfully!'); 
         navigate('/courses'); 
@@ -188,16 +189,7 @@ const AddTraining = () => {
               type="button"
               className="bg-gray-400 text-white p-2 rounded"
               onClick={() =>
-                setTraining({
-                  title: '',
-                  description: '',
-                  type: 'free',
-                  audience: 'family and children',
-                  price: '',
-                  date: '',
-                  places: '',
-                  photo: null,
-                })
+                navigate('/courses')
               }
             >
               Cancel

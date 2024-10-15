@@ -11,6 +11,7 @@ const AppointmentInformationPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [actionType, setActionType] = useState(null);
   const navigate = useNavigate();
+  const [error,setError] = useState(null)
 
   useEffect(() => {
     const fetchAppointment = async () => {
@@ -19,7 +20,7 @@ const AppointmentInformationPage = () => {
         setLoading(false);
         return;
       }
-
+      setError(null)
       try {
         const response = await axios.get(`${BACKEND_URL}/api/appointments/${appointmentId}`);
         setAppointment(response.data);
@@ -28,9 +29,11 @@ const AppointmentInformationPage = () => {
         if(error.response?.data?.message)
         {
             toast.error(error.response.data.message)
+            setError(error.response.data.message)
         }
         else{
             toast.error(error.message)
+            setError(error.response.data.message)
         } 
         setLoading(false);
       }
@@ -101,8 +104,10 @@ const AppointmentInformationPage = () => {
   };
 
   if (loading) {
-    return <p>Loading appointment details...</p>;
+    return <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>;
   }
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
+
 
   if (!appointment) {
     return <p>No appointment found.</p>;

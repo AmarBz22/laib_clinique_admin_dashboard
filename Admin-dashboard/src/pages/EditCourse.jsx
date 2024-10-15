@@ -2,6 +2,7 @@ import  { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom'; // Import useNavigate
 import { toast } from 'react-toastify';
+import { BACKEND_URL } from '../../constants';
 
 const EditCourse = () => {
     const [training, setTraining] = useState({
@@ -15,10 +16,13 @@ const EditCourse = () => {
         photo: null,
       });
     const { courseId } = useParams(); 
+    const [isLoading,setLoading]=useState(true)
+    const [error,setError] = useState(null)
     useEffect(() => {
         const fetchCourse = async () => {
           try {
-            const response = await axios.get('http://localhost:4000/api/trainings/'+courseId); // Update the URL to your backend endpoint            
+            setError(null)
+            const response = await axios.get(`${BACKEND_URL}/api/trainings/${courseId}`); // Update the URL to your backend endpoint            
             const updatedData = {
                 ...response.data, // Spread the rest of the response data
                 photo: response.data.photo.replace(/\\/g, '/') ,// Modify only the photo field
@@ -31,10 +35,14 @@ const EditCourse = () => {
             if(error.response?.data?.message)
             {
                 toast.error(error.response.data.message)
+                setError(error.response.data.message)
             }
             else{
                 toast.error(error.message)
+                setError(error.message)
             }
+          }finally{
+            setLoading(false)
           }
         };
 
@@ -90,7 +98,7 @@ const EditCourse = () => {
     
 
     try {
-      const response = await axios.put(`http://localhost:4000/api/trainings/update/${courseId}`, formData, {
+      const response = await axios.put(`${BACKEND_URL}/api/trainings/update/${courseId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -110,6 +118,9 @@ const EditCourse = () => {
       }
     }
   };
+
+  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>)
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
 
   return (
     <div className="p-6 mt-20">

@@ -1,5 +1,4 @@
-import React from 'react';
-import { BiMenu, BiSearch } from 'react-icons/bi';
+import { BiMenu } from 'react-icons/bi';
 
 const Header = ({ toggleSidebar, isSidebarOpen }) => {
   return (

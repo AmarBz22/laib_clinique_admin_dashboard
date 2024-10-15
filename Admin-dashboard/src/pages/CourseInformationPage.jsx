@@ -2,18 +2,21 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { BACKEND_URL } from "../../constants";
 
 const CourseInformationPage = () => {
     const [course ,setCourse] = useState()
     const { courseId } = useParams(); 
     const [requests ,setRequests] = useState([])
     const [isModalOpen,setModel] = useState(false)
-
+    const [isLoading,setLoading]=useState(true)
+    const [error,setError] = useState(null)
     useEffect(() => {
         const fetchCourse = async () => {
           try {
-            const response = await axios.get('http://localhost:4000/api/trainings/'+courseId); // Update the URL to your backend endpoint
-            const response2 = await axios.get(`http://localhost:4000/api/trainingrequest/training_request_by_course/${response.data.title}`);
+            setError(null)
+            const response = await axios.get(`${BACKEND_URL}/api/trainings/${courseId}`); // Update the URL to your backend endpoint
+            const response2 = await axios.get(`${BACKEND_URL}/api/trainingrequest/training_request_by_course/${response.data.title}`);
             setRequests(response2.data.result)
             
             const updatedData = {
@@ -26,10 +29,16 @@ const CourseInformationPage = () => {
             if(error.response?.data?.message)
             {
                 toast.error(error.response.data.message)
+                setError(error.response.data.message)
             }
             else{
                 toast.error(error.message)
-            }          }
+                setError(error.message)
+            }          
+          }
+          finally{
+            setLoading(false)
+          }
         };
 
         
@@ -40,7 +49,7 @@ const CourseInformationPage = () => {
 
     const handleConfirm = async()=>{
       try {
-        const response = await axios.delete('http://localhost:4000/api/trainings/delete_training/'+courseId);
+        const response = await axios.delete(`${BACKEND_URL}/api/trainings/delete_training/${courseId}`);
         if(response.statusText==="OK")
         {
           toast.success("course deleted successfully")
@@ -57,9 +66,11 @@ const CourseInformationPage = () => {
       }
     }
 
+  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>)
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
 
   return ( <>
-      {(course && requests) ? 
+      {(course && requests) &&
   <div className="px-6 pb-6">
       <div className="p-4 mt-28 rounded-lg shadow-lg pb-8">
           <div className="flex md:flex-row flex-col  justify-between items-center">
@@ -158,7 +169,7 @@ const CourseInformationPage = () => {
             </div>
           </div>
         )}
-  </div>: <h3 className="absolute top-1/2 left-1/2 text-lg font-bold"> Loading ... </h3>} 
+  </div>} 
     </>);
 }
  

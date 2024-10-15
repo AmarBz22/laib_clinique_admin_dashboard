@@ -2,6 +2,7 @@ import  { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { BACKEND_URL } from '../../constants';
 
 const OrderInformationPage = () => {
   const { orderId } = useParams(); // Extracting the orderId from the route parameters
@@ -9,7 +10,8 @@ const OrderInformationPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
   const [actionType, setActionType] = useState(null); // State to track the action type (confirm or cancel)
   const navigate = useNavigate(); // Hook for programmatically navigating
-
+  const [isLoading,setLoading]=useState(true)
+  const [error,setError] = useState(null)
   // Fetch the order details when the component mounts or when orderId changes
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -18,17 +20,22 @@ const OrderInformationPage = () => {
         return;
       }
       try {
-        const response = await axios.get(`http://localhost:4000/api/order/${orderId}`);
-        console.log('Order details fetched:', response.data); // Add this log
+        setError(null)
+        const response = await axios.get(`${BACKEND_URL}/api/order/${orderId}`);
         setOrderDetails(response.data);
       } catch (error) {
         if(error.response?.data?.message)
           {
               toast.error(error.response.data.message)
+              setError(error.response.data.message)
           }
           else{
               toast.error(error.message)
+              setError(error.message)
           }
+      }
+      finally{
+        setLoading(false)
       }
     };
 
@@ -50,7 +57,7 @@ const OrderInformationPage = () => {
   // Confirm order action
   const handleConfirm = async () => {
     try {
-      await axios.put(`http://localhost:4000/api/order/confirm/${orderId}`);
+      await axios.put(`${BACKEND_URL}/api/order/confirm/${orderId}`);
       // Refresh the page to update the order status
       setOrderDetails({ ...orderDetails, status: 'Confirmed' });
       closeModal(); // Close the modal after confirmation
@@ -68,7 +75,7 @@ const OrderInformationPage = () => {
   // Cancel order action
   const handleCancel = async () => {
     try {
-      await axios.put(`http://localhost:4000/api/order/cancel/${orderId}`);
+      await axios.put(`${BACKEND_URL}/api/order/cancel/${orderId}`);
       // Refresh the page to update the order status
       setOrderDetails({ ...orderDetails, status: 'Cancelled' });
       closeModal(); // Close the modal after cancellation
@@ -83,8 +90,8 @@ const OrderInformationPage = () => {
     }
   };
 
-  // If the order details are not yet fetched, show a loading state
-  if (!orderDetails) return <div>Loading...</div>;
+  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>)
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">

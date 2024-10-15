@@ -1,9 +1,9 @@
 import  { useState, useEffect } from 'react';
 import { FaCheckCircle, FaTrashAlt } from 'react-icons/fa';
-import { AiFillCloseCircle } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { BACKEND_URL } from '../../constants';
 
 const OrdersPage = () => {
   const [type,setType] = useState("All")
@@ -13,24 +13,30 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders,setFiltredOrders] = useState([])
   const [searchTerm, setSearchTerm] = useState('');
-
+  const [isLoading,setLoading]=useState(true)
+  const [error,setError] = useState(null)
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/order/getAllorders');
-        console.log('Orders fetched:', response.data); // Add this line to log the response
+        setError(null)
+        const response = await axios.get(`${BACKEND_URL}/api/order/getAllorders`);
         setOrders(response.data);
         setFiltredOrders(response.data)
       } catch (error) {
         if(error.response?.data?.message)
         {
             toast.error(error.response.data.message)
+            setError(error.response.data.message)
         }
         else{
             toast.error(error.message)
+            setError(error.message)
         }
+      }
+      finally{
+        setLoading(false)
       }
     };
   
@@ -103,7 +109,7 @@ const OrdersPage = () => {
       try {
         console.log(selectedOrder);
         
-        const response = await axios.put(`http://localhost:4000/api/order/confirm/${selectedOrder._id}`);
+        const response = await axios.put(`${BACKEND_URL}/api/order/confirm/${selectedOrder._id}`);
         toast.success(response.data.message)
         setFiltredOrders((prevOrders) =>
           prevOrders.map(order =>
@@ -125,7 +131,7 @@ const OrdersPage = () => {
     }
     } else if (actionType === 'delete') {
       try {
-        const response = await axios.delete(`http://localhost:4000/api/order/${selectedOrder._id}`);
+        const response = await axios.delete(`${BACKEND_URL}/api/order/${selectedOrder._id}`);
         toast.success(response.data.message)
         // Refresh orders after deletion
         console.log(response.data);
@@ -148,6 +154,10 @@ const OrdersPage = () => {
   const handleRowClick = (orderId) => {
     navigate(`/orders/${orderId}`);
   };
+
+
+  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>)
+  if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
 
   return (
     <div className="md:p-6 flex flex-col px-4 justify-center items-center mt-20 mb-10">
