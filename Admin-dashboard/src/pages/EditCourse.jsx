@@ -1,28 +1,67 @@
-import React, { useState } from 'react';
+import  { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate, useParams } from 'react-router-dom'; // Import useNavigate
+import { toast } from 'react-toastify';
 
 const EditCourse = () => {
+    const [training, setTraining] = useState({
+        title: '',
+        description: '',
+        type: 'free',
+        audience: 'family and children',
+        price: '',
+        date: '',
+        places: '',
+        photo: null,
+      });
+    const { courseId } = useParams(); 
+    useEffect(() => {
+        const fetchCourse = async () => {
+          try {
+            const response = await axios.get('http://localhost:4000/api/trainings/'+courseId); // Update the URL to your backend endpoint            
+            const updatedData = {
+                ...response.data, // Spread the rest of the response data
+                photo: response.data.photo.replace(/\\/g, '/') ,// Modify only the photo field
+                date : response.data.date.slice(0,10)
+              };            
+            
+            setTraining(updatedData);  
+                      
+          } catch (error) {
+            if(error.response?.data?.message)
+            {
+                toast.error(error.response.data.message)
+            }
+            else{
+                toast.error(error.message)
+            }
+          }
+        };
+
+        
     
-  const [training, setTraining] = useState({
-    title: '',
-    description: '',
-    type: 'free',
-    audience: 'family and children',
-    price: '',
-    date: '',
-    places: '',
-    photo: null,
-  });
-  const [message, setMessage] = useState('');
+        fetchCourse();
+      }, []);
+  
   const navigate = useNavigate(); // Initialize navigate
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTraining((prevTraining) => ({
-      ...prevTraining,
-      [name]: value,
-    }));
+    if(name==="type" && value==="free")
+    {
+      setTraining((prevTraining) => ({
+        ...prevTraining,
+        [name]: value,
+        ["price"] : 0
+      }));
+    }
+    else{
+      setTraining((prevTraining) => ({
+        ...prevTraining,
+        [name]: value,
+      }));
+    }
+    
   };
 
   const handleFileChange = (e) => {
@@ -35,10 +74,7 @@ const EditCourse = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!training.photo) {
-      setMessage('Please upload a training image.');
-      return;
-    }
+    
 
     const formData = new FormData();
     formData.append('title', training.title || '');
@@ -48,23 +84,30 @@ const EditCourse = () => {
     formData.append('price', training.price.toString()); // Convert price to string
     formData.append('date', training.date || '');
     formData.append('places', training.places.toString()); // Convert places to string
-    formData.append('photo', training.photo); // Add photo file
+    if (training.photo) {
+      formData.append('photo', training.photo); // Add photo file
+    }
+    
 
     try {
-      const response = await axios.post('http://localhost:4000/api/trainings/create_training', formData, {
+      const response = await axios.put(`http://localhost:4000/api/trainings/update/${courseId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setMessage('Training added successfully!');
-
-      // Wait 2 seconds, then redirect to Courses page
-      setTimeout(() => {
-        navigate('/courses'); // Redirect to the Courses page
-      }, 2000); // Wait for 2 seconds before redirecting
+      if(response.statusText==="OK")
+      {
+        toast.success('Training updated successfully!'); 
+        navigate(`/courses/${courseId}`);
+      }
     } catch (error) {
-      console.error('Error adding training:', error);
-      setMessage('Failed to add training. Please try again.');
+      if(error.response?.data?.message)
+      {
+          toast.error(error.response.data.message)
+      }
+      else{
+          toast.error(error.message)
+      }
     }
   };
 
@@ -128,6 +171,7 @@ const EditCourse = () => {
               value={training.price}
               onChange={handleChange}
               required
+              disabled={training.type === "free"} 
               className="p-2 border rounded w-full"
               min="0"
             />
@@ -156,7 +200,7 @@ const EditCourse = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Training Image:</label>
+            <label className="block mb-2">Training Image: <span className='text-[12px] text-red-600 font-bold'>if you want to let the previous image don't upload a new one</span></label>
             <input
               type="file"
               name="photo"
@@ -167,28 +211,16 @@ const EditCourse = () => {
           </div>
           <div className="flex justify-end space-x-2">
             <button type="submit" className="bg-primary-pink text-white p-2 rounded">
-              Add Training
+              Update Training
             </button>
             <button
               type="button"
               className="bg-gray-400 text-white p-2 rounded"
-              onClick={() =>
-                setTraining({
-                  title: '',
-                  description: '',
-                  type: 'free',
-                  audience: 'family and children',
-                  price: '',
-                  date: '',
-                  places: '',
-                  photo: null,
-                })
-              }
+              onClick={() =>{navigate('/courses/'+courseId)}}
             >
               Cancel
             </button>
           </div>
-          {message && <p className={`mt-4 ${message.includes('successfully') ? 'text-green-500' : 'text-red-500'}`}>{message}</p>}
         </form>
       </div>
     </div>

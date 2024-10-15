@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { toast } from 'react-toastify';
 
 const AddTraining = () => {
   const [training, setTraining] = useState({
@@ -13,15 +14,25 @@ const AddTraining = () => {
     places: '',
     photo: null,
   });
-  const [message, setMessage] = useState('');
   const navigate = useNavigate(); // Initialize navigate
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTraining((prevTraining) => ({
-      ...prevTraining,
-      [name]: value,
-    }));
+    if(name==="type" && value==="free")
+    {
+      setTraining((prevTraining) => ({
+        ...prevTraining,
+        [name]: value,
+        ["price"] : 0
+      }));
+    }
+    else{
+      setTraining((prevTraining) => ({
+        ...prevTraining,
+        [name]: value,
+      }));
+    }
+    
   };
 
   const handleFileChange = (e) => {
@@ -35,7 +46,7 @@ const AddTraining = () => {
     e.preventDefault();
 
     if (!training.photo) {
-      setMessage('Please upload a training image.');
+      toast.error('Please upload a training image.');
       return;
     }
 
@@ -55,15 +66,19 @@ const AddTraining = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setMessage('Training added successfully!');
-
-      // Wait 2 seconds, then redirect to Courses page
-      setTimeout(() => {
-        navigate('/courses'); // Redirect to the Courses page
-      }, 2000); // Wait for 2 seconds before redirecting
+      if(response.statusText==="OK")
+      {
+        toast.success('Training added successfully!'); 
+        navigate('/courses'); 
+      }
     } catch (error) {
-      console.error('Error adding training:', error);
-      setMessage('Failed to add training. Please try again.');
+      if(error.response?.data?.message)
+      {
+          toast.error(error.response.data.message)
+      }
+      else{
+          toast.error(error.message)
+      }   
     }
   };
 
@@ -127,6 +142,7 @@ const AddTraining = () => {
               value={training.price}
               onChange={handleChange}
               required
+              disabled={training.type === "free"} 
               className="p-2 border rounded w-full"
               min="0"
             />
@@ -187,7 +203,6 @@ const AddTraining = () => {
               Cancel
             </button>
           </div>
-          {message && <p className={`mt-4 ${message.includes('successfully') ? 'text-green-500' : 'text-red-500'}`}>{message}</p>}
         </form>
       </div>
     </div>

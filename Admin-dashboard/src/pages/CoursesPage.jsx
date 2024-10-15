@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
@@ -16,7 +17,13 @@ const CoursesPage = () => {
         setCourses(response.data);
         console.log(response.data);
       } catch (error) {
-        console.error('Error fetching courses:', error);
+        if(error.response?.data?.message)
+          {
+              toast.error(error.response.data.message)
+          }
+          else{
+              toast.error(error.message)
+          }
       }
     };
 

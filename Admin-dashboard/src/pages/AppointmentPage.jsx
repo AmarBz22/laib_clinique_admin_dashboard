@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
-import { AiFillCloseCircle } from 'react-icons/ai';
 import { BiShow } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BACKEND_URL } from '../../constants/index';
+import { toast } from 'react-toastify';
 
 const AppointmentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [actionType, setActionType] = useState('');
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [type,setType] = useState("All")
   const navigate = useNavigate();
   const [filtredAppointments , setFiltredAppointments] = useState([])
@@ -27,9 +25,14 @@ const AppointmentsPage = () => {
         const response = await axios.get(`${BACKEND_URL}/api/appointments/get_appointment`);
         setAppointments(response.data);
         setFiltredAppointments(response.data)
-      } catch (err) {
-        console.error('Error fetching appointments:', err);
-        setError('Error fetching appointments');
+      } catch (error) {
+        if(error.response?.data?.message)
+          {
+              toast.error(error.response.data.message)
+          }
+          else{
+              toast.error(error.message)
+          }
       } finally {
         setLoading(false);
       }
@@ -146,16 +149,34 @@ const AppointmentsPage = () => {
     
 
   }
-  
-
-
   const closeModal = () => setShowModal(false);
+
+  const handleAction = async () => {  
+      try {
+        const response = await axios.delete(`http://localhost:4000/api/appointments/${selectedAppointment._id}`);
+        toast.success(response.data.message)
+        // Refresh orders after deletion
+        console.log(response.data);
+        
+        setAppointments(appointments.filter(order => order._id !== selectedAppointment._id));
+        setFiltredAppointments(filtredAppointments.filter(order => order._id !== selectedAppointment._id));
+      } catch (error) {
+        if(error.response?.data?.message)
+        {
+            toast.error(error.response.data.message)
+        }
+        else{
+            toast.error(error.message)
+        }
+      }
+    closeModal();
+  };
+
   const handleRowClick = (appointmentId) => {
     navigate(`/appointments/${appointmentId}`);
   };
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
 
   return (
     <div className="md:p-6 flex flex-col justify-center items-center mt-20 mb-10 px-2">
@@ -231,6 +252,33 @@ const AppointmentsPage = () => {
           </tbody>
         </table>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-lg font-semibold mb-4">Confirm Action</h2>
+            <p className="mb-4">
+              Are you sure you want to delete this appointment?
+            </p>
+            <div className="flex justify-end">
+              <button
+                className="text-gray-500 order-2 hover:text-gray-700 ml-4"
+                onClick={closeModal}
+              >
+                NO
+              </button>
+              <button
+                className={`${
+                  actionType === 'confirm' ? 'bg-green-500' : 'bg-red-500'
+                } text-white px-4 py-2 rounded order-1`}
+                onClick={handleAction}
+              >
+                  YES
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { FaCheckCircle, FaTrashAlt } from 'react-icons/fa';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const OrdersPage = () => {
   const [type,setType] = useState("All")
@@ -23,7 +24,13 @@ const OrdersPage = () => {
         setOrders(response.data);
         setFiltredOrders(response.data)
       } catch (error) {
-        console.error('Error fetching orders:', error);
+        if(error.response?.data?.message)
+        {
+            toast.error(error.response.data.message)
+        }
+        else{
+            toast.error(error.message)
+        }
       }
     };
   
@@ -94,17 +101,45 @@ const OrdersPage = () => {
   const handleAction = async () => {
     if (actionType === 'confirm') {
       try {
-        await axios.post(`http://localhost:4000/api/order/confirm/${selectedOrder.id}`);
+        console.log(selectedOrder);
+        
+        const response = await axios.put(`http://localhost:4000/api/order/confirm/${selectedOrder._id}`);
+        toast.success(response.data.message)
+        setFiltredOrders((prevOrders) =>
+          prevOrders.map(order =>
+            order._id === selectedOrder._id ? { ...order, ...response.data.order } : order
+          )
+        );  
+        setOrders((prevOrders) =>
+          prevOrders.map(order =>
+            order._id === selectedOrder._id ? { ...order, ...response.data.order } : order
+          ))              
       } catch (error) {
-        console.error('Error confirming order:', error);
-      }
+        if(error.response?.data?.message)
+        {
+            toast.error(error.response.data.message)
+        }
+        else{
+            toast.error(error.message)
+        }
+    }
     } else if (actionType === 'delete') {
       try {
-        await axios.delete(`http://localhost:4000/api/order/delete/${selectedOrder.id}`);
+        const response = await axios.delete(`http://localhost:4000/api/order/${selectedOrder._id}`);
+        toast.success(response.data.message)
         // Refresh orders after deletion
-        setOrders(orders.filter(order => order.id !== selectedOrder.id));
+        console.log(response.data);
+        
+        setOrders(orders.filter(order => order._id !== selectedOrder._id));
+        setFiltredOrders(filteredOrders.filter(order => order._id !== selectedOrder._id));
       } catch (error) {
-        console.error('Error deleting order:', error);
+        if(error.response?.data?.message)
+        {
+            toast.error(error.response.data.message)
+        }
+        else{
+            toast.error(error.message)
+        }
       }
     }
     closeModal();
@@ -156,9 +191,12 @@ const OrdersPage = () => {
       <td className="p-3 border-b border-gray-200">
         <div className='flex items-center gap-4'>
           <FaCheckCircle
-            className="text-green-500 cursor-pointer"
+            className={order.status === "Pending" ? "text-green-500 cursor-pointer" : "text-gray-500 cursor-pointer"}
             title="Confirm Order"
-            onClick={(e) => { e.stopPropagation(); handleConfirmDeleteClick(order, 'confirm'); }}
+            
+            onClick={(e) => {  if (order.status !== "Pending") return; // Prevent click if disabled
+              e.stopPropagation();
+              handleConfirmDeleteClick(order, 'confirm') }}
           />
           <FaTrashAlt
             className="text-red-500 cursor-pointer"
@@ -183,18 +221,18 @@ const OrdersPage = () => {
             </p>
             <div className="flex justify-end">
               <button
-                className="text-gray-500 hover:text-gray-700 mr-4"
+                className="text-gray-500 order-2 hover:text-gray-700 ml-4"
                 onClick={closeModal}
               >
-                <AiFillCloseCircle size={24} />
+                NO
               </button>
               <button
                 className={`${
                   actionType === 'confirm' ? 'bg-green-500' : 'bg-red-500'
-                } text-white px-4 py-2 rounded`}
+                } text-white px-4 py-2 rounded order-1`}
                 onClick={handleAction}
               >
-                {actionType === 'confirm' ? 'Confirm' : 'Delete'}
+                  YES
               </button>
             </div>
           </div>

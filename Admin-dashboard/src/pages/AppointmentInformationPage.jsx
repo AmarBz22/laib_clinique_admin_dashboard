@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BACKEND_URL } from '../../constants/index';
@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 const AppointmentInformationPage = () => {
   const { appointmentId } = useParams();
   const [appointment, setAppointment] = useState(null);
-  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [actionType, setActionType] = useState(null);
@@ -16,7 +15,7 @@ const AppointmentInformationPage = () => {
   useEffect(() => {
     const fetchAppointment = async () => {
       if (!appointmentId) {
-        setMessage('Appointment ID is missing.');
+        toast.error('Appointment ID is missing.');
         setLoading(false);
         return;
       }
@@ -26,8 +25,13 @@ const AppointmentInformationPage = () => {
         setAppointment(response.data);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching appointment:', error);
-        setMessage('Error fetching appointment details.');
+        if(error.response?.data?.message)
+        {
+            toast.error(error.response.data.message)
+        }
+        else{
+            toast.error(error.message)
+        } 
         setLoading(false);
       }
     };
@@ -60,17 +64,20 @@ const AppointmentInformationPage = () => {
       else{
         await axios.put(`${BACKEND_URL}/api/appointments/confirm/${appointmentId}`, {
           time: appointment.time,
-          status: 'Confirmed', // You might need to include this depending on your backend logic
+          status: 'Confirmed', 
         });
-        setMessage('Appointment confirmed successfully!');
+        toast.success("Appointment confirmed successfully!")
         closeModal();
-        setTimeout(() => {
-          navigate('/appointments');
-        }, 2000);
+        navigate('/appointments');
       }      
     } catch (error) {
-      console.error('Error updating appointment:', error.response?.data || error);
-      setMessage('Error updating appointment. ' + (error.response?.data?.message || ''));
+      if(error.response?.data?.message)
+      {
+          toast.error(error.response.data.message)
+      }
+      else{
+          toast.error(error.message)
+      } 
     }
   };
   
@@ -78,15 +85,18 @@ const AppointmentInformationPage = () => {
   const handleCancel = async () => {
     try {
       await axios.put(`${BACKEND_URL}/api/appointments/cancel/${appointmentId}`);
-      setMessage('Appointment canceled successfully!');
+      toast.success('Appointment canceled successfully!');
       setAppointment(null);
       closeModal();
-      setTimeout(() => {
-        navigate('/appointments');
-      }, 2000);
+      navigate('/appointments');
     } catch (error) {
-      console.error('Error canceling appointment:', error);
-      setMessage('Error canceling appointment. Please try again.');
+      if(error.response?.data?.message)
+      {
+          toast.error(error.response.data.message)
+      }
+      else{
+          toast.error(error.message)
+      } 
     }
   };
 
@@ -184,7 +194,6 @@ const AppointmentInformationPage = () => {
 
 
 
-        {message && <p className="mt-4 text-green-500">{message}</p>}
       </div>
 
       {isModalOpen && (

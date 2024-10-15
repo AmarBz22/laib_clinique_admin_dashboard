@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const OrderInformationPage = () => {
   const { orderId } = useParams(); // Extracting the orderId from the route parameters
@@ -21,8 +22,14 @@ const OrderInformationPage = () => {
         console.log('Order details fetched:', response.data); // Add this log
         setOrderDetails(response.data);
       } catch (error) {
-        console.error('Error fetching order details:', error);
-        navigate('/orders'); // Redirect to orders page if error occurs
+        if(error.response?.data?.message)
+          {
+              toast.error(error.response.data.message)
+          }
+          else{
+              toast.error(error.message)
+          }
+          navigate('/orders'); 
       }
     };
 
@@ -49,7 +56,13 @@ const OrderInformationPage = () => {
       setOrderDetails({ ...orderDetails, status: 'Completed' });
       closeModal(); // Close the modal after confirmation
     } catch (error) {
-      console.error('Error confirming order:', error);
+      if(error.response?.data?.message)
+      {
+          toast.error(error.response.data.message)
+      }
+      else{
+          toast.error(error.message)
+      }
     }
   };
 
@@ -61,7 +74,13 @@ const OrderInformationPage = () => {
       setOrderDetails({ ...orderDetails, status: 'Cancelled' });
       closeModal(); // Close the modal after cancellation
     } catch (error) {
-      console.error('Error cancelling order:', error);
+      if(error.response?.data?.message)
+      {
+          toast.error(error.response.data.message)
+      }
+      else{
+          toast.error(error.message)
+      }
     }
   };
 
