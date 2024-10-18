@@ -13,6 +13,10 @@ import RequireAuth from './components/RequireAuth';
 import AddCourse from './pages/AddCourse';
 import CourseInformationPage from './pages/CourseInformationPage';
 import EditCourse from './pages/EditCourse';
+import ProductPage from './pages/ProductPage';
+import AddProduct from './pages/AddProduct';
+import ProductInformationPage from './pages/ProuductInformationPage';
+import EditProduct from './pages/EditProduct';
 
 
 function App() {
@@ -34,6 +38,13 @@ function App() {
           <Route path="/appointments/:appointmentId" element={<RequireAuth><Layout><AppointmentInformationPage /></Layout></RequireAuth>} /> {/* Dynamic route */}
           <Route path="/orders/:orderId" element={<RequireAuth><Layout><OrderInformationPage /></Layout></RequireAuth>} /> {/* Dynamic route */}
           <Route path="/courses/:courseId" element={<RequireAuth><Layout><CourseInformationPage /></Layout></RequireAuth>} />
+          <Route path="/products" element={<RequireAuth><Layout><ProductPage /></Layout></RequireAuth>} />
+          <Route path="/products/addProduct" element={<RequireAuth><Layout><AddProduct /></Layout></RequireAuth>} />
+          <Route path="/products/:productId" element={<RequireAuth><Layout><ProductInformationPage /></Layout></RequireAuth>} />
+          <Route path="/products/edit/:productId" element={<RequireAuth><Layout><EditProduct /></Layout></RequireAuth>} />
+
+
+
 
         </Routes>
       {/* </Layout> */}
