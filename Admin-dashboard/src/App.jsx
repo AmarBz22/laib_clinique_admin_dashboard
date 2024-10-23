@@ -18,36 +18,152 @@ import AddProduct from './pages/AddProduct';
 import ProductInformationPage from './pages/ProuductInformationPage';
 import EditProduct from './pages/EditProduct';
 
-
 function App() {
-  
-
   return (
     <Router>
-        {/* <Layout> Wrap the layout around all routes */}
-        <Routes>
-          <Route path="/" element={<RequireAuth><Layout><Home /></Layout></RequireAuth>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/appointments" element={<RequireAuth><Layout><AppointmentPage /></Layout></RequireAuth>} />
-          <Route path="/orders" element={<RequireAuth><Layout><OrderPage /></Layout></RequireAuth>} />
-          <Route path="/courses" element={<RequireAuth><Layout><CoursesPage /></Layout></RequireAuth>} />
-          <Route path="/statistics" element={<RequireAuth><Layout><StatisticsPage /></Layout></RequireAuth>} />
-          <Route path="/courses/addCourse" element={<RequireAuth><Layout><AddCourse /></Layout></RequireAuth>} />
-          <Route path="/courses/edit/:courseId" element={<RequireAuth><Layout><EditCourse /></Layout></RequireAuth>} />
-
-          <Route path="/appointments/:appointmentId" element={<RequireAuth><Layout><AppointmentInformationPage /></Layout></RequireAuth>} /> {/* Dynamic route */}
-          <Route path="/orders/:orderId" element={<RequireAuth><Layout><OrderInformationPage /></Layout></RequireAuth>} /> {/* Dynamic route */}
-          <Route path="/courses/:courseId" element={<RequireAuth><Layout><CourseInformationPage /></Layout></RequireAuth>} />
-          <Route path="/products" element={<RequireAuth><Layout><ProductPage /></Layout></RequireAuth>} />
-          <Route path="/products/addProduct" element={<RequireAuth><Layout><AddProduct /></Layout></RequireAuth>} />
-          <Route path="/products/:productId" element={<RequireAuth><Layout><ProductInformationPage /></Layout></RequireAuth>} />
-          <Route path="/products/edit/:productId" element={<RequireAuth><Layout><EditProduct /></Layout></RequireAuth>} />
-
-
-
-
-        </Routes>
-      {/* </Layout> */}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
+              <Layout>
+                <Home />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/appointments"
+          element={
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
+              <Layout>
+                <AppointmentPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
+              <Layout>
+                <OrderPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/courses"
+          element={
+            <RequireAuth allowedRoles={['admin', 'receptionist']}>
+              <Layout>
+                <CoursesPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/statistics"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <StatisticsPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/courses/addCourse"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <AddCourse />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/courses/edit/:courseId"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <EditCourse />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/appointments/:appointmentId"
+          element={
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
+              <Layout>
+                <AppointmentInformationPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/orders/:orderId"
+          element={
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
+              <Layout>
+                <OrderInformationPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/courses/:courseId"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <CourseInformationPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <ProductPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/products/addProduct"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <AddProduct />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/products/:productId"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <ProductInformationPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/products/edit/:productId"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <EditProduct />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+      </Routes>
     </Router>
   );
 }

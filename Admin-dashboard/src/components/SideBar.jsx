@@ -1,13 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { BiHome, BiCalendar, BiShoppingBag, BiBook, BiStats } from 'react-icons/bi';
-import { IoMdCloseCircle } from "react-icons/io";
-import { FaSpinner } from "react-icons/fa";
-import { clearUserAuthInfo } from '../../context/auth';
+import { IoMdCloseCircle } from 'react-icons/io';
+import { FaSpinner } from 'react-icons/fa';
+import { AuthContext } from '../../context/auth';
 
 const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const { clearUserAuthInfo } = useContext(AuthContext);
 
   const handleLogout = () => {
     setIsLoading(true);
@@ -19,8 +20,8 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
   };
 
   return (
-    <aside className="md:fixed  fixed top-0 h-full left-0 z-50 md:w-64 sm:w-1/2 w-3/4 bg-primary-pink text-white transition-all duration-300">
-      <nav className=" relative flex flex-col p-4 md:items-start items-center h-screen">
+    <aside className="md:fixed fixed top-0 h-full left-0 z-50 md:w-64 sm:w-1/2 w-3/4 bg-primary-pink text-white transition-all duration-300">
+      <nav className="relative flex flex-col p-4 md:items-start items-center h-screen">
         {/* Logo Section */}
         <div className="flex justify-center items-center w-full">
           <div className="flex items-center mb-6">
@@ -53,6 +54,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               <span className="font-semibold">Dashboard</span>
             </Link>
           </li>
+
           {/* Appointments */}
           <li>
             <Link
@@ -68,6 +70,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               <span className="font-semibold">Appointments</span>
             </Link>
           </li>
+
           {/* Orders */}
           <li>
             <Link
@@ -83,6 +86,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               <span className="font-semibold">Orders</span>
             </Link>
           </li>
+
           {/* Products */}
           <li>
             <Link
@@ -98,6 +102,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               <span className="font-semibold">Products</span>
             </Link>
           </li>
+
           {/* Courses */}
           <li>
             <Link
@@ -113,6 +118,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               <span className="font-semibold">Courses</span>
             </Link>
           </li>
+
           {/* Statistics */}
           <li>
             <Link
@@ -138,9 +144,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
             disabled={isLoading}
           >
             Logout
-            {isLoading && (
-              <FaSpinner className="animate-spin ml-2" />
-            )}
+            {isLoading && <FaSpinner className="animate-spin ml-2" />}
           </button>
         </div>
       </nav>
