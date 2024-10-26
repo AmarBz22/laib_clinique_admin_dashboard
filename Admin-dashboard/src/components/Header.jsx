@@ -1,10 +1,48 @@
 import { BiMenu } from 'react-icons/bi';
 import { IoIosNotifications } from "react-icons/io";
 import Notification from './Notification';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
+import { toast } from 'react-toastify';
+import { BACKEND_URL } from '../../constants';
+import axios from 'axios';
+
 
 const Header = ({ toggleSidebar, isSidebarOpen }) => {
   const [isNotificationOpen, openNotification] = useState(false)
+  const [notifications, setNotifications] = useState([]);
+
+    useEffect(() => {
+        const socket = io(BACKEND_URL); // Replace with your backend server URL
+
+        // Fetch notifications from the server
+        const fetchNotifications = async () => {
+            try {
+                const response = await axios.get(`${BACKEND_URL}/api/notification/`); // Replace with your notifications API endpoint
+                setNotifications(response.data); // Assuming the response data contains the notifications
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                toast.error('Failed to fetch notifications');
+            }
+        };
+
+        // Fetch notifications on component mount
+        fetchNotifications();
+
+        // Listen for new notifications
+        socket.on('new-notification', (notification) => {
+          
+            // Show toast notification
+            toast.info(`New Notification Arrived ` ,{
+              autoClose: 1000 });
+            // Update notification list
+            setNotifications((prev) => [...prev, notification]);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
   return (
     <>
     <header
@@ -28,7 +66,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
       {/* Profile Section */}
       <div className="flex items-center gap-4">
         <div className='realtive hover:cursor-pointer hover:opacity-80' onClick={()=>openNotification(!isNotificationOpen)}>
-          <h3 className='rounded-full  bg-red-600 text-white text-[12px] text-bold text-center w-fit px-2 py-[2px] shadow-md absolute top-3'>3</h3>
+          <h3 className='rounded-full  bg-red-600 text-white text-[12px] text-bold text-center w-fit px-2 py-[2px] shadow-md absolute top-3'>{notifications.length}</h3>
           <IoIosNotifications className='w-8 h-8' width={50} height={50}/>
         </div>
 
@@ -46,12 +84,12 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
 
 
     </header>
-    {isNotificationOpen && <div className='sm:w-[400px] w-full  fixed top-20 sm:right-10 shadow-lg border-2 border-gray-300 rounded-md bg-white z-50'>
+    {isNotificationOpen && <div className='sm:w-[400px] max-h-[400px] overflow-y-auto w-full  fixed top-20 sm:right-10 shadow-lg border-2 border-gray-300 rounded-md bg-white z-50'>
       <h3 className='text-lg font-bold text-center pt-2 '>Notifications </h3>
-        <Notification openNotification={openNotification} type="Order" client="sifou" id="1" /> 
-        <Notification openNotification={openNotification} type="Appointment" client="sifou" id="671c1b5966bbd9a2fbe2e7ff" />
-        <Notification openNotification={openNotification} type="Training Request" client="sifou" id="1" /> 
-        <Notification openNotification={openNotification} type="Order" client="sifou" id="1" />
+
+      {notifications.map((notification)=>{
+        return(<Notification key={notification._id} openNotification={openNotification} type={notification.type} client={notification.username} id={notification.id} />)
+      })}
       </div> }
     </>
   );
