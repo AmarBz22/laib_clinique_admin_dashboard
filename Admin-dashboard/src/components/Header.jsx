@@ -20,9 +20,16 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
             try {
                 const response = await axios.get(`${BACKEND_URL}/api/notification/`); // Replace with your notifications API endpoint
                 setNotifications(response.data); // Assuming the response data contains the notifications
-            } catch (error) {
-                console.error('Error fetching notifications:', error);
-                toast.error('Failed to fetch notifications');
+                console.log(response.data);
+                
+              } catch (error) {
+              if(error.response?.data?.message)
+                {
+                    toast.error(error.response.data.message)
+                }
+                else{
+                    toast.error("Faild to Fetch Notifications")
+                } 
             }
         };
 
@@ -87,8 +94,8 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
     {isNotificationOpen && <div className='sm:w-[400px] max-h-[400px] overflow-y-auto w-full  fixed top-20 sm:right-10 shadow-lg border-2 border-gray-300 rounded-md bg-white z-50'>
       <h3 className='text-lg font-bold text-center pt-2 '>Notifications </h3>
 
-      {notifications.map((notification)=>{
-        return(<Notification key={notification._id} openNotification={openNotification} type={notification.type} client={notification.username} id={notification.id} />)
+      {notifications.map((notification)=>{        
+        return(<Notification timestamp={notification.createdAt} setNotifications={setNotifications} key={notification._id} noty_id={notification._id} openNotification={openNotification} type={notification.type} client={notification.username} id={notification.id} />)
       })}
       </div> }
     </>
