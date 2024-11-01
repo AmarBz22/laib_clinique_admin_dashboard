@@ -56,7 +56,7 @@ function App() {
         <Route
           path="/courses"
           element={
-            <RequireAuth allowedRoles={['admin', 'receptionist']}>
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
               <Layout>
                 <CoursesPage />
               </Layout>
@@ -76,7 +76,7 @@ function App() {
         <Route
           path="/courses/addCourse"
           element={
-            <RequireAuth allowedRoles={['admin']}>
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
               <Layout>
                 <AddCourse />
               </Layout>
@@ -86,7 +86,7 @@ function App() {
         <Route
           path="/courses/edit/:courseId"
           element={
-            <RequireAuth allowedRoles={['admin']}>
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
               <Layout>
                 <EditCourse />
               </Layout>
@@ -116,7 +116,7 @@ function App() {
         <Route
           path="/courses/:courseId"
           element={
-            <RequireAuth allowedRoles={['admin']}>
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
               <Layout>
                 <CourseInformationPage />
               </Layout>
@@ -126,7 +126,7 @@ function App() {
         <Route
           path="/products"
           element={
-            <RequireAuth allowedRoles={['admin']}>
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
               <Layout>
                 <ProductPage />
               </Layout>
@@ -136,7 +136,7 @@ function App() {
         <Route
           path="/products/addProduct"
           element={
-            <RequireAuth allowedRoles={['admin']}>
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
               <Layout>
                 <AddProduct />
               </Layout>
@@ -146,7 +146,7 @@ function App() {
         <Route
           path="/products/:productId"
           element={
-            <RequireAuth allowedRoles={['admin']}>
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
               <Layout>
                 <ProductInformationPage />
               </Layout>
@@ -156,7 +156,7 @@ function App() {
         <Route
           path="/products/edit/:productId"
           element={
-            <RequireAuth allowedRoles={['admin']}>
+            <RequireAuth allowedRoles={['admin', 'recepsionist']}>
               <Layout>
                 <EditProduct />
               </Layout>

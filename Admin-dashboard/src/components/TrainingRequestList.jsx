@@ -10,7 +10,7 @@ const TrainingRequestList = ({ title }) => {
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
-    const [actionType, setActionType] = useState(''); // Either 'confirm' or 'delete'
+    const [actionType, setActionType] = useState(''); // Either 'confirm', 'delete', or 'cancel'
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -67,6 +67,32 @@ const TrainingRequestList = ({ title }) => {
         }
     };
 
+    const handleCancel = async () => {
+        if (!selectedRequest) return;
+    
+        try {
+            // Call the correct endpoint to cancel the training request
+            const response = await axios.put(`${BACKEND_URL}/api/trainingrequest/cancelRequest/${selectedRequest}`);
+            
+            if (response.status === 200) {
+                // Update the local state to reflect the cancelled request
+                setRequests((prevRequests) =>
+                    prevRequests.map((request) =>
+                        request._id === selectedRequest ? { ...request, status: 'cancelled' } : request
+                    )
+                );
+                toast.success('Request cancelled successfully!');
+                window.location.reload(); // Refresh the page after deletion
+
+            }
+        } catch (error) {
+            toast.error('Error cancelling request: ' + (error.response?.data?.message || error.message));
+        } finally {
+            closeModal(); // Close the modal after the operation
+        }
+    };
+    
+
     const openModal = (requestId, action) => {
         setSelectedRequest(requestId);
         setActionType(action);
@@ -106,11 +132,11 @@ const TrainingRequestList = ({ title }) => {
                                     {request.status === 'completed' ? (
                                         <span className="text-green-600 font-bold">Completed</span>
                                     ) : (
-                                        <span className="text-yellow-600 font-bold">Pending</span>
+                                        <span className="text-blue-600 font-bold">Pending</span>
                                     )}
                                 </td>
                                 <td className="border p-2">
-                                    {request.status !== 'completed' && (
+                                    {request.status !== 'completed' ? (
                                         <>
                                             <button
                                                 className="bg-green-500 text-white px-2 py-1 rounded mr-2"
@@ -125,6 +151,13 @@ const TrainingRequestList = ({ title }) => {
                                                 Delete
                                             </button>
                                         </>
+                                    ) : (
+                                        <button
+                                            className="bg-yellow-500 text-white px-2 py-1 rounded"
+                                            onClick={() => openModal(request._id, 'cancel')}
+                                        >
+                                            Cancel
+                                        </button>
                                     )}
                                 </td>
                             </tr>
@@ -135,13 +168,15 @@ const TrainingRequestList = ({ title }) => {
                 <p>No training requests found.</p>
             )}
 
-            {/* Modal for Confirm or Delete actions */}
+            {/* Modal for Confirm, Delete, or Cancel actions */}
             {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg p-6 w-94">
-                        <h3 className="text-lg font-semibold mb-4">{actionType === 'confirm' ? 'Confirm Request' : 'Delete Request'}</h3>
+                        <h3 className="text-lg font-semibold mb-4">
+                            {actionType === 'confirm' ? 'Confirm Request' : actionType === 'delete' ? 'Delete Request' : 'Cancel Request'}
+                        </h3>
                         <p className="mb-4">
-                            Are you sure you want to {actionType === 'confirm' ? 'confirm' : 'delete'} this request?
+                            Are you sure you want to {actionType} this request?
                         </p>
                         <div className="flex justify-end">
                             <button
@@ -151,8 +186,8 @@ const TrainingRequestList = ({ title }) => {
                                 No
                             </button>
                             <button
-                                className={`order-1 px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-primary-pink text-white' : 'bg-red-500 text-white'}`}
-                                onClick={actionType === 'confirm' ? handleConfirm : handleDelete}
+                                className={`order-1 px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-primary-pink text-white' : actionType === 'delete' ? 'bg-red-500 text-white' : 'bg-yellow-500 text-white'}`}
+                                onClick={actionType === 'confirm' ? handleConfirm : actionType === 'delete' ? handleDelete : handleCancel}
                             >
                                 Yes
                             </button>

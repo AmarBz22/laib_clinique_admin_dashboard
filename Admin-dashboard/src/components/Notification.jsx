@@ -51,22 +51,30 @@ const Notification = ({type,client,id,openNotification,noty_id,setNotifications,
         
     }
     return ( 
-    <div className="border-b-2 p-2 border-gray-600 flex justify-start flex-col items-start hover:opacity-70 hover:cursor-pointer" onClick={handleClick}>
-        <div className="flex justify-between w-full">
-            <div className="flex justify-start items-center text-bold">
-                {type === "Order" && <BiShoppingBag  className="font-bold" /> }
-                {type === "Appointment" && <BiCalendar  className="font-bold" /> }
-                {type === "Training Request" && <BiBook  className="font-bold" /> }
+        <div 
+        className={`border-b-2 p-2 border-gray-600 flex justify-start flex-col items-start ${
+          type ? "hover:opacity-70 hover:cursor-pointer" : ""
+        }`}
+        onClick={type ? handleClick : undefined}
+      >
+        {type ? (
+          <>
+            <div className="flex justify-between w-full">
+              <div className="flex justify-start items-center text-bold">
+                {type === "Order" && <BiShoppingBag className="font-bold" />}
+                {type === "Appointment" && <BiCalendar className="font-bold" />}
+                {type === "Training Request" && <BiBook className="font-bold" />}
                 <h3 className="font-bold">New {type}</h3>
+              </div>
+              <h3 className="text-sm text-gray-600">{formatTimestamp(timestamp)}</h3>
             </div>
-            <h3 className="text-sm text-gray-600">{formatTimestamp(timestamp)}</h3>
-        </div>
-        
-        <h3>
-            {`The client ${client}  submitted a new ${type}.`}
-        </h3>
-  
-    </div> );
+            
+            <h3>{`The client ${client} submitted a new ${type}.`}</h3>
+          </>
+        ) : (
+          <h3 className="text-gray-600">No new notifications</h3>
+        )}
+      </div> );
 }
  
 export default Notification;

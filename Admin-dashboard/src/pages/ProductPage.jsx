@@ -54,7 +54,7 @@ const ProductCard = () => {
               <h3 className="text-lg font-semibold mt-2">{product.name}</h3>
               <p className="text-gray-600">{product.description}</p>
               <div className="flex justify-between items-center mt-4">
-                <span className="text-xl font-bold">${product.price}</span>
+                <span className="text-xl font-bold">{product.price} DZ</span>
                 <Link to={"/products/"+product._id}>
                 <button className="bg-primary-pink text-white py-2 px-4 rounded hover:bg-pink-700 transition">
                   See More
