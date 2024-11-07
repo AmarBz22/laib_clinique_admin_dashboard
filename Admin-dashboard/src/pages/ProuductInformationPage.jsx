@@ -37,7 +37,7 @@ const ProductInformationPage = () => {
         try {
             const response = await axios.delete(`${BACKEND_URL}/api/products/${productId}`);
             if (response.statusText === "OK") {
-                toast.success("Product deleted successfully");
+                toast.success("Produit supprimé avec succès");
                 navigate("/products");
             }
         } catch (error) {
@@ -46,7 +46,7 @@ const ProductInformationPage = () => {
         }
     };
 
-    if (isLoading) return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Loading...</h3>;
+    if (isLoading) return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Chargement...</h3>;
     if (error) return <h3 className="flex justify-center items-center h-screen text-lg font-bold text-red-600">{error}</h3>;
 
     return (
@@ -61,34 +61,32 @@ const ProductInformationPage = () => {
                                 </h3>
                             </div>
                             <div className="flex justify-end gap-2 items-center">
-                                <Link to={`/products/edit/${product._id}`} className="bg-blue-600 px-4 py-1 rounded-sm text-white">Edit</Link>
-                                <button onClick={() => setModalOpen(true)} className="bg-red-600 px-4 py-1 rounded-sm text-white">Delete</button>
+                                <Link to={`/products/edit/${product._id}`} className="bg-blue-600 px-4 py-1 rounded-sm text-white">Modifier</Link>
+                                <button onClick={() => setModalOpen(true)} className="bg-red-600 px-4 py-1 rounded-sm text-white">Supprimer</button>
                             </div>
                         </div>
 
                         <div className="mt-6 flex md:flex-row flex-col justify-start gap-4">
-    <img src={`http://localhost:4000/${product.photo}`} alt={product.name} className="md:w-1/2 w-full object-cover rounded-sm" />
-    <div className="w-full">
-        <h2 className="text-lg font-bold mb-2">{product.name}</h2>
-        <hr className="border-b-2 border-gray-400 mb-4" />
-        <div className="mt-4">
-            <p className="text-md font-semibold">Price: <span className="font-normal">{product.price},00 DZD</span></p>
-            <p className="text-md font-semibold">Stock: <span className="font-normal">{product.stockQuantity}</span></p>
-            <p className="text-md mt-2">{product.description || "No description available."}</p>
-        </div>
-    </div>
-</div>
-
-
+                            <img src={`http://localhost:4000/${product.photo}`} alt={product.name} className="md:w-1/2 w-full object-cover rounded-sm" />
+                            <div className="w-full">
+                                <h2 className="text-lg font-bold mb-2">{product.name}</h2>
+                                <hr className="border-b-2 border-gray-400 mb-4" />
+                                <div className="mt-4">
+                                    <p className="text-md font-semibold">Prix : <span className="font-normal">{product.price},00 DZD</span></p>
+                                    <p className="text-md font-semibold">Stock : <span className="font-normal">{product.stockQuantity}</span></p>
+                                    <p className="text-md mt-2">{product.description || "Aucune description disponible."}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {isModalOpen && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                             <div className="bg-white rounded-lg p-6 w-94">
-                                <h3 className="text-lg font-semibold mb-4">Delete Product</h3>
-                                <p className="mb-4">Are you sure you want to delete this product?</p>
+                                <h3 className="text-lg font-semibold mb-4">Supprimer le produit</h3>
+                                <p className="mb-4">Êtes-vous sûr de vouloir supprimer ce produit ?</p>
                                 <div className="flex justify-end">
-                                    <button className="bg-gray-300 text-black px-4 py-2 rounded ml-2" onClick={() => setModalOpen(false)}>No</button>
-                                    <button className="px-4 py-2 rounded bg-red-500 text-white" onClick={handleConfirm}>Yes</button>
+                                    <button className="bg-gray-300 text-black px-4 py-2 rounded ml-2" onClick={() => setModalOpen(false)}>Non</button>
+                                    <button className="px-4 py-2 rounded bg-red-500 text-white" onClick={handleConfirm}>Oui</button>
                                 </div>
                             </div>
                         </div>

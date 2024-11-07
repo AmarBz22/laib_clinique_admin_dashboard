@@ -1,10 +1,12 @@
 import  { useState, useEffect } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import { BiShow } from 'react-icons/bi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , Link} from 'react-router-dom';
 import axios from 'axios';
 import { BACKEND_URL } from '../../constants/index';
 import { toast } from 'react-toastify';
+import { FaSpinner } from "react-icons/fa"; // Import spinner icon
+
 
 const AppointmentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -108,11 +110,11 @@ const AppointmentsPage = () => {
     setFiltredAppointments(newdata);
   }
 
-  const handleCancel = ()=>{
-    setType("Cancelled")
+  const handleComplete = ()=>{
+    setType("Completed")
     let newdata = appointments.filter(appointment => 
       appointment.fullName.toLowerCase().startsWith(searchTerm) &&
-      appointment.status === "Cancelled"
+      appointment.status === "Completed"
     );
     if(date != "")
     {
@@ -182,38 +184,55 @@ const AppointmentsPage = () => {
   };
 
   if (loading) {
-    return <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>;
+    return <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Chargement ... </h3>;
   }
   if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
 
 
   return (
     <div className="md:p-6 flex flex-col justify-center items-center mt-20 mb-10 px-2">
-      <h1 className="text-2xl font-semibold mb-8 text-center">Appointments</h1>
+      <h1 className="text-2xl font-semibold mb-8 text-center">Rendez-vous</h1>
 
       <div className="lg:flex lg:gap-0 lg:justify-between w-full items-center grid grid-cols-2 gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Search by patient name"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="p-2 border rounded order-1"
-        />
-        <div className='flex  justify-center  items-center  lg:order-2 order-3 col-span-2 lg:mt-0 mt-4'>
-          <button onClick={handleAll} className={type==="All" ?'py-1 px-3  border-black rounded-l-md bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black rounded-l-md shadow-inner'}>All</button>
-          <button onClick={handleConfrim} className={type==="Confirmed" ?'py-1 px-3  border-black  bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black shadow-inner'}>Confirmed</button>
-          <button onClick={handlePending} className={type==="Pending" ? 'py-1 px-3  border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black   text-black shadow-inner'}>Pending</button>
-          <button  onClick={handleCancel} className={type==="Cancelled" ? 'py-1 px-3 rounded-r-md border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black rounded-r-md  text-black shadow-inner'}>Cancelled</button>
-        </div>
-        <input type='date' value={date} onChange={(e)=>{handleDate(e)}} placeholder='filter by Date' className='lg:order-3 order-2 p-2 border rounded '/>          
-      </div>
+  <input
+    type="text"
+    placeholder="Rechercher par nom de patient "
+    value={searchTerm}
+    onChange={handleSearchChange}
+    className="p-2 border rounded order-1"
+  />
+  
+  <div className="flex justify-center items-center lg:order-2 order-3 col-span-2 lg:mt-0 mt-4">
+    <button onClick={handleAll} className={type === "All" ? 'py-1 px-3 border-black rounded-l-md bg-primary-pink text-white shadow-inner' : 'py-1 px-3 border-black rounded-l-md shadow-inner'}>Tous</button>
+    <button onClick={handleConfrim} className={type === "Confirmed" ? 'py-1 px-3 border-black bg-primary-pink text-white shadow-inner' : 'py-1 px-3 border-black shadow-inner'}>Confirmés</button>
+    <button onClick={handlePending} className={type === "Pending" ? 'py-1 px-3 border-black shadow-inner bg-primary-pink text-white' : 'py-1 px-3 border-black text-black shadow-inner'}>En Attent</button>
+    <button onClick={handleComplete} className={type === "Completed" ? 'py-1 px-3 rounded-r-md border-black shadow-inner bg-primary-pink text-white' : 'py-1 px-3 border-black rounded-r-md text-black shadow-inner'}>Completez</button>
+  </div>
+
+  <input
+    type="date"
+    value={date}
+    onChange={handleDate}
+    placeholder="Filter by Date"
+    className="lg:order-3 order-2 p-2 border rounded"
+  />
+  <Link to="addAppointment">
+  <button 
+    className="p-2 bg-primary-pink text-white rounded order-4 lg:mt-0 mt-4">
+    {loading ? <FaSpinner className="animate-spin mr-2" /> : "Ajouter Rendez-vous"}
+
+  </button>
+  </Link>
+  
+</div>
+
 
       <div className='mt-5 border border-gray-200 w-screen md:w-full overflow-x-auto rounded-lg shadow-md'>
         <table className="w-full border-collapse bg-white">
           <thead>
             <tr>
               <th className="text-gray-800 font-semibold p-3 text-left">Date</th>
-              <th className="text-gray-800 font-semibold p-3 text-left">Phone Number</th>
+              <th className="text-gray-800 font-semibold p-3 text-left">Numéro</th>
               <th className="text-gray-800 font-semibold p-3 text-left">Patient</th>
               <th className="text-gray-800 font-semibold p-3 text-left">Status</th>
               <th className="text-gray-800 font-semibold p-3 text-left">Actions</th>
@@ -230,7 +249,15 @@ const AppointmentsPage = () => {
                   <td className="p-3 border-b border-gray-200">{formatDate(appointment.date)}</td>
                   <td className="p-3 border-b border-gray-200">{appointment.phoneNumber}</td>
                   <td className="p-3 border-b border-gray-200">{appointment.fullName}</td>
-                  <td className="p-3 border-b border-gray-200">{appointment.status}</td>
+                  <td className="p-3 border-b border-gray-200">
+                  {appointment.status.toLowerCase() === 'pending'
+                  ? 'En attente'
+                  : appointment.status.toLowerCase() === 'confirmed'
+                  ? 'Confirmé'
+                  : appointment.status.toLowerCase() === 'completed'
+                  ? 'Complété'
+                  : appointment.status}
+                  </td>
                   <td className="p-3 border-b border-gray-200">
                     <div className='flex items-center gap-2'>
                       <BiShow
@@ -255,7 +282,7 @@ const AppointmentsPage = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center p-3">No appointments found</td>
+                <td colSpan="5" className="text-center p-3">Pas de Rendez-vous</td>
               </tr>
             )}
           </tbody>
@@ -265,16 +292,16 @@ const AppointmentsPage = () => {
       {showModal && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-lg font-semibold mb-4">Confirm Action</h2>
+            <h2 className="text-lg font-semibold mb-4">Action de Confirm</h2>
             <p className="mb-4">
-              Are you sure you want to delete this appointment?
+              vous etes vraiment sur que vous voulez supprimre ce rendez-vous?
             </p>
             <div className="flex justify-end">
               <button
                 className="text-gray-500 order-2 hover:text-gray-700 ml-4"
                 onClick={closeModal}
               >
-                NO
+                NON
               </button>
               <button
                 className={`${
@@ -282,7 +309,7 @@ const AppointmentsPage = () => {
                 } text-white px-4 py-2 rounded order-1`}
                 onClick={handleAction}
               >
-                  YES
+                  OUI
               </button>
             </div>
           </div>

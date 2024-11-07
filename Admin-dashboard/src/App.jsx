@@ -17,6 +17,8 @@ import ProductPage from './pages/ProductPage';
 import AddProduct from './pages/AddProduct';
 import ProductInformationPage from './pages/ProuductInformationPage';
 import EditProduct from './pages/EditProduct';
+import AddAppointmentPage from './pages/AddAppointmen';
+import CourseStaticPage from './pages/courseStaticPage';
 
 function App() {
   return (
@@ -74,6 +76,16 @@ function App() {
           }
         />
         <Route
+          path="/statistics/courseStatics"
+          element={
+            <RequireAuth allowedRoles={['admin']}>
+              <Layout>
+                <CourseStaticPage />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/courses/addCourse"
           element={
             <RequireAuth allowedRoles={['admin', 'recepsionist']}>
@@ -103,6 +115,16 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route
+        path="/appointments/addAppointment"
+        element={
+          <RequireAuth allowedRoles={['admin', 'recepsionist']}>
+            <Layout>
+              <AddAppointmentPage />
+            </Layout>
+          </RequireAuth>
+        }
+      />
         <Route
           path="/orders/:orderId"
           element={

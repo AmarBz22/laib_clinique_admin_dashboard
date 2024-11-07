@@ -52,31 +52,18 @@ const AppointmentInformationPage = () => {
   };
 
   const handleDateChange = (e) => {
-    const updateDate = e.target.value;
-    console.log("Updated Date: ", updateDate); // Log the updated date
-    setAppointment((prev) => ({ ...prev, date: updateDate }));
+    const updatedDate = e.target.value;
+    setAppointment((prev) => ({ ...prev, date: updatedDate }));
   };
   
 
   const handleConfirm = async () => {
-    if (!appointment.time) {
-      toast.error('Please select the time to confirm the order');
-      closeModal();
-      return;
-    }
-  
     try {
-      // Send the PUT request and store the response
-      const response = await axios.put(`${BACKEND_URL}/api/appointments/confirm/${appointmentId}`, {
-        time: appointment.time,
-        date: appointment.date, // Include the date if needed
+      await axios.put(`${BACKEND_URL}/api/appointments/confirm/${appointmentId}`, {
         status: 'Confirmed',
+        time: appointment.time,
+        date: appointment.date,
       });
-  
-      // Log the response data to the console
-      console.log('Response from server: ', response.data);
-  
-      // Show success message
       toast.success('Appointment confirmed successfully!');
       closeModal();
       navigate('/appointments');
@@ -85,13 +72,14 @@ const AppointmentInformationPage = () => {
       toast.error(errorMessage);
     }
   };
-  
 
-  const handleCancel = async () => {
+  const handleUpdate = async () => {
     try {
-      await axios.put(`${BACKEND_URL}/api/appointments/cancel/${appointmentId}`);
-      toast.success('Appointment canceled successfully!');
-      setAppointment(null);
+      await axios.put(`${BACKEND_URL}/api/appointments/update_datetime/${appointmentId}`, {
+        time: appointment.time,
+        date: appointment.date,
+      });
+      toast.success('Appointment updated successfully!');
       closeModal();
       navigate('/appointments');
     } catch (error) {
@@ -100,8 +88,33 @@ const AppointmentInformationPage = () => {
     }
   };
 
+  const handleComplete = async () => {
+    try {
+      await axios.put(`${BACKEND_URL}/api/appointments/${appointmentId}/complete`, {
+        status: 'Completed',
+      });
+      toast.success('Appointment marked as completed!');
+      navigate('/appointments');
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`${BACKEND_URL}/api/appointments/${appointmentId}`);
+      toast.success('Appointment deleted successfully!');
+      navigate('/appointments');
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      toast.error(errorMessage);
+    }
+  };
+
+
   if (loading) {
-    return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Loading ...</h3>;
+    return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Chargement ...</h3>;
   }
 
   if (error) {
@@ -109,16 +122,16 @@ const AppointmentInformationPage = () => {
   }
 
   if (!appointment) {
-    return <p>No appointment found.</p>;
+    return <p>Pas de rendez-vous.</p>;
   }
 
   return (
     <div className="p-6 mt-20">
-      <h1 className="text-2xl font-semibold mb-4 text-center">Appointment Information</h1>
+      <h1 className="text-2xl font-semibold mb-4 text-center">Information de Rendez-vous</h1>
 
       <div className="border border-gray-300 shadow-lg p-4 rounded-lg mb-6 bg-white">
         <div className="mb-4">
-          <label className="block mb-2">Patient Name:</label>
+          <label className="block mb-2">Nom de Patient:</label>
           <input
             type="text"
             value={appointment.fullName}
@@ -128,7 +141,7 @@ const AppointmentInformationPage = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2">Patient Address:</label>
+          <label className="block mb-2">Adress de Patient:</label>
           <input
             type="text"
             value={appointment.location}
@@ -138,7 +151,7 @@ const AppointmentInformationPage = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2">Phone Number:</label>
+          <label className="block mb-2">Numéro:</label>
           <input
             type="text"
             value={appointment.phoneNumber}
@@ -148,13 +161,13 @@ const AppointmentInformationPage = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-2">Chosen Date:</label>
+          <label className="block mb-2">Date selectionné:</label>
           <input
             type="date"
-            disabled={appointment.status !== 'Pending'}
+            disabled={appointment.status !== 'Pending' && appointment.status !== 'Confirmed'}
             value={appointment.date?.substring(0, 10)}
             onChange={handleDateChange}
-            className={appointment.status !== 'Pending' ? "p-2 border rounded w-full bg-gray-100" : "p-2 border rounded w-full"}
+            className="p-2 border rounded w-full"
           />
         </div>
 
@@ -167,57 +180,136 @@ const AppointmentInformationPage = () => {
             className="p-2 border rounded w-full bg-gray-100"
           />
         </div>
+        <div className="mb-4">
+          <label className="block mb-2">Categorie:</label>
+          <input
+            type="text"
+            value={appointment.category}
+            readOnly
+            className="p-2 border rounded w-full bg-gray-100"
+          />
+        </div>
 
         <div className="mb-4">
-          <label className="block mb-2">Time:</label>
+          <label className="block mb-2">Temps:</label>
           <input
             type="time"
-            disabled={appointment.status !== 'Pending'}
-            value={appointment.time} // Ensure the time is formatted correctly
+            disabled={appointment.status !== 'Pending' && appointment.status !== 'Confirmed'}
+            value={appointment.time}
             onChange={handleTimeChange}
-            className={appointment.status !== 'Pending' ? "p-2 border rounded w-full bg-gray-100" : "p-2 border rounded w-full"}
+            className="p-2 border rounded w-full"
           />
         </div>
 
         <div className="flex justify-end space-x-2">
-          {appointment.status === 'Confirmed' || appointment.status === 'Cancelled' ? (
-            <button className="bg-primary-pink text-white p-2 rounded" onClick={() => navigate('/appointments')}>
-              Back to Appointments
-            </button>
-          ) : (
-            <>
-              <button className="bg-primary-pink text-white p-2 rounded" onClick={() => openModal('confirm')}>
-                Confirm
-              </button>
-              <button className="bg-gray-400 text-white p-2 rounded" onClick={() => openModal('cancel')}>
-                Cancel
-              </button>
-            </>
-          )}
-        </div>
+  {appointment.status === 'Pending' && (
+    <>
+      <button
+        className="bg-blue-500 text-white p-2 rounded"
+        onClick={() => openModal('confirm')}
+      >
+        Confirmer
+      </button>
+      <button
+        className="bg-red-500 text-white p-2 rounded"
+        onClick={() => openModal('delete')}
+      >
+        Supprimer
+      </button>
+    </>
+  )}
+  
+  {appointment.status === 'Confirmed' && (
+    <>      
+      <button
+        className="bg-slate-500 text-white p-2 rounded"
+        onClick={() => openModal('delete')}
+      >
+        Supprimer
+      </button>
+
+      <button
+        className="bg-primary-pink text-white p-2 rounded"
+        onClick={() => openModal('update')}
+      >
+        mise à jour
+      </button>
+
+      <button
+        className="bg-green-500 text-white p-2 rounded"
+        onClick={() => openModal('complete')}
+      >
+        Completer
+      </button>
+
+      
+    </>
+  )}
+  
+  {appointment.status === 'Completed' && (
+    <button
+      className="bg-primary-pink text-white p-2 rounded"
+      onClick={() => navigate('/appointments')}
+    >
+      Consulter les rendez-vous
+    </button>
+  )}
+</div>
+
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-94">
-            <h3 className="text-lg font-semibold mb-4">{actionType === 'confirm' ? 'Confirm Appointment' : 'Cancel Appointment'}</h3>
-            <p className="mb-4">
-              Are you sure you want to {actionType === 'confirm' ? 'confirm' : 'cancel'} this appointment?
-            </p>
-            <div className="flex justify-end">
-              <button className="order-2 bg-gray-300 text-black px-4 py-2 rounded ml-2" onClick={closeModal}>
-                NO
-              </button>
-              <button
-                className={`order-1 px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-primary-pink text-white' : 'bg-red-500 text-white'}`}
-                onClick={actionType === 'confirm' ? handleConfirm : handleCancel}
-              >
-                Yes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white rounded-lg p-6 w-94">
+      <h3 className="text-lg font-semibold mb-4">
+        {actionType === 'delete'
+          ? 'Supprimer Rendez-vous'
+          : actionType === 'update'
+          ? 'Mise à jour Rendez-vous'
+          : actionType === 'complete'
+          ? 'Completer Rendez-vous'
+          : actionType === 'confirm'
+          ? 'Confirmer Rendez-vous'
+          : ''}
+      </h3>
+      <p className="mb-4">
+        vous-etes sur que vous voulez{' '}
+        {actionType === 'delete'
+          ? 'supprimer'
+          : actionType === 'update'
+          ? 'mise a jour'
+          : actionType === 'complete'
+          ? 'completer'
+          : actionType === 'confirm'
+          ? 'confirmer'
+          : ''}{' '}
+        ce rendez-vous?
+      </p>
+      <div className="flex justify-end">
+        <button className="order-2 bg-gray-300 text-black px-4 py-2 rounded ml-2" onClick={closeModal}>
+          NON
+        </button>
+        <button
+          className={`order-1 px-4 py-2 rounded ${
+            actionType === 'complete' ? 'bg-primary-pink' : actionType === 'confirm' ? 'bg-primary-pink' : 'bg-primary-pink'
+          } text-white`}
+          onClick={
+            actionType === 'update'
+              ? handleUpdate
+              : actionType === 'complete'
+              ? handleComplete
+              : actionType === 'confirm'
+              ? handleConfirm
+              : handleDelete
+          }
+        >
+          OUI
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

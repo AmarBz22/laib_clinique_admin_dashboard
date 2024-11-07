@@ -119,16 +119,16 @@ const EditCourse = () => {
     }
   };
 
-  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>)
+  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Chargement ... </h3>)
   if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
 
   return (
     <div className="p-6 mt-20">
-      <h1 className="text-2xl font-semibold mb-4 text-center">Edit Training</h1>
+      <h1 className="text-2xl font-semibold mb-4 text-center">Modifier Formation</h1>
       <div className="border border-gray-300 shadow-lg p-4 rounded-lg mb-6 bg-white">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block mb-2">Training Title:</label>
+            <label className="block mb-2"> Titre de Formation:</label>
             <input
               type="text"
               name="title"
@@ -157,9 +157,9 @@ const EditCourse = () => {
               onChange={handleChange}
               className="p-2 border rounded w-full"
             >
-              <option value="free">Free</option>
-              <option value="reduced">Reduced</option>
-              <option value="paid">Paid</option>
+              <option value="free">Gratuit</option>
+              <option value="reduced">Reduction</option>
+              <option value="paid">Paié</option>
             </select>
           </div>
           <div className="mb-4">
@@ -170,12 +170,12 @@ const EditCourse = () => {
               onChange={handleChange}
               className="p-2 border rounded w-full"
             >
-              <option value="family and children">Family and Children</option>
+              <option value="family and children">Famille et Enfants</option>
               <option value="specialist">Specialist</option>
             </select>
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Price:</label>
+            <label className="block mb-2">Prix:</label>
             <input
               type="number"
               name="price"
@@ -199,7 +199,7 @@ const EditCourse = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Number of Places:</label>
+            <label className="block mb-2">Nombre des Places:</label>
             <input
               type="number"
               name="places"
@@ -211,7 +211,7 @@ const EditCourse = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Training Image: <span className='text-[12px] text-red-600 font-bold'>if you want to let the previous image don't upload a new one</span></label>
+            <label className="block mb-2">Image de la Formation: <span className='text-[12px] text-red-600 font-bold'>si vous souhaitez conserver l'image précédente, ne téléchargez pas de nouvelle</span></label>
             <input
               type="file"
               name="photo"
@@ -222,14 +222,14 @@ const EditCourse = () => {
           </div>
           <div className="flex justify-end space-x-2">
             <button type="submit" className="bg-primary-pink text-white p-2 rounded">
-              Update Training
+              Modifer Formation
             </button>
             <button
               type="button"
               className="bg-gray-400 text-white p-2 rounded"
               onClick={() =>{navigate('/courses/'+courseId)}}
             >
-              Cancel
+              Annuler
             </button>
           </div>
         </form>

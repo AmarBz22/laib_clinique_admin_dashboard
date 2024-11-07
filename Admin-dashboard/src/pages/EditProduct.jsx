@@ -56,30 +56,37 @@ const EditProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const formData = new FormData();
         formData.append('name', product.name);
         formData.append('description', product.description);
         formData.append('price', product.price.toString());
         formData.append('stockQuantity', product.stockQuantity.toString());
+    
+        // Check if photo is included (e.g., the user selected a new photo)
         if (product.photo) {
-            formData.append('photo', product.photo);
+            formData.append('photo', product.photo);  // If photo is a file object
         }
-
+    
         try {
             const response = await axios.put(`${BACKEND_URL}/api/products/${productId}`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'multipart/form-data', // Axios will handle this automatically, but you can leave it
                 },
             });
-            if (response.statusText === "OK") {
-                toast.success('Product updated successfully!'); 
+    
+            if (response.status === 200) { // Checking for successful response status
+                toast.success('Product updated successfully!');
                 navigate(`/products/${productId}`);
+            } else {
+                toast.error('Failed to update product');
             }
         } catch (error) {
-            toast.error(error.message);
+            // Handle errors (could be network errors, invalid responses, etc.)
+            toast.error(error.response ? error.response.data.message : error.message);
         }
     };
+    
 
     if (isLoading) return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Loading...</h3>;
     if (error) return <h3 className="flex justify-center items-center h-screen text-lg font-bold text-red-600">{error}</h3>;
@@ -90,7 +97,7 @@ const EditProduct = () => {
             <div className="border border-gray-300 shadow-lg p-4 rounded-lg mb-6 bg-white">
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block mb-2">Product Name:</label>
+                        <label className="block mb-2">Nom de Produit:</label>
                         <input
                             type="text"
                             name="name"
@@ -112,7 +119,7 @@ const EditProduct = () => {
                         ></textarea>
                     </div>
                     <div className="mb-4">
-                        <label className="block mb-2">Price:</label>
+                        <label className="block mb-2">Prix:</label>
                         <input
                             type="number"
                             name="price"
@@ -124,7 +131,7 @@ const EditProduct = () => {
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block mb-2">Stock Quantity:</label>
+                        <label className="block mb-2">Quantity de Stoque:</label>
                         <input
                             type="number"
                             name="stockQuantity"
@@ -136,7 +143,7 @@ const EditProduct = () => {
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block mb-2">Product Image: <span className='text-[12px] text-red-600 font-bold'>If you want to keep the previous image, don't upload a new one.</span></label>
+                        <label className="block mb-2">Image de Produit: <span className='text-[12px] text-red-600 font-bold'>si vous souhaitez conserver l'image précédente, ne téléchargez pas de nouvelle</span></label>
                         <input
                             type="file"
                             name="photo"
@@ -147,14 +154,14 @@ const EditProduct = () => {
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button type="submit" className="bg-primary-pink text-white p-2 rounded">
-                            Update Product
+                            Modifier
                         </button>
                         <button
                             type="button"
                             className="bg-gray-400 text-white p-2 rounded"
                             onClick={() => navigate(`/products/${productId}`)}
                         >
-                            Cancel
+                            Annuler
                         </button>
                     </div>
                 </form>

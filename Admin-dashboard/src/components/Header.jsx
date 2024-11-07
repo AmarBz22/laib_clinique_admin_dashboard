@@ -55,7 +55,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
             <BiMenu className="text-2xl" />
           </button>
           {/* Dashboard Text */}
-          <span className="ml-2 font-semibold lg:text-2xl text-lg">Dashboard</span>
+          <span className="ml-2 font-semibold lg:text-2xl text-lg">Laib Clinque</span>
         </div>
 
         {/* Profile Section */}

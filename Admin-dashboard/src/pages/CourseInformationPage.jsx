@@ -52,7 +52,7 @@ const CourseInformationPage = () => {
         }
     };
 
-    if (isLoading) return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Loading ...</h3>;
+    if (isLoading) return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Chargement ...</h3>;
     if (error) return <h3 className="flex justify-center items-center h-screen text-lg font-bold text-red-600">{error}</h3>;
 
     return (
@@ -62,19 +62,23 @@ const CourseInformationPage = () => {
                     <div className="flex items-center justify-start gap-2 w-full md:order-1 order-2">
                         <h3 className="text-start font-bold text-xl md:w-3/4 w-full break-all">{course.title}
                         <span className={`inline-block px-2 py-1 rounded text-white ml-1 ${
-                                course.type.toLowerCase() === 'free'
-                                    ? 'bg-green-500'
-                                    : course.type.toLowerCase() === 'reduced'
-                                    ? 'bg-yellow-500'
-                                    : 'bg-red-500'
-                                }`}>
-                            {course.type}
-                        </span>
+                            course.type.toLowerCase() === 'free'
+                            ? 'bg-green-500'
+                            : course.type.toLowerCase() === 'reduced'
+                            ? 'bg-yellow-500'
+                            : 'bg-red-500'
+                         }`}>
+                            {course.type.toLowerCase() === 'free' 
+                            ? 'Gratuit' 
+                            : course.type.toLowerCase() === 'reduced' 
+                            ? 'Réduction' 
+                            : 'Payé'}
+                    </span>
                         </h3>
                     </div>
                     <div className="flex md:order-2 order-1 justify-end gap-2 items-center md:mb-0 mb-2 self-end md:self-auto">
-                        <Link to={`/courses/edit/${course._id}`} className="bg-blue-600 px-4 py-1 rounded-sm text-white"> Edit </Link>
-                        <button onClick={() => setShowModal(true)} className="bg-red-600 px-4 py-1 rounded-sm text-white">Delete</button>
+                        <Link to={`/courses/edit/${course._id}`} className="bg-blue-600 px-4 py-1 rounded-sm text-white"> Modifier </Link>
+                        <button onClick={() => setShowModal(true)} className="bg-red-600 px-4 py-1 rounded-sm text-white">Supprimer</button>
                     </div>
                 </div>
 
@@ -89,8 +93,8 @@ const CourseInformationPage = () => {
                         </p>
                         <div className="xl:flex justify-between items-center xl:mt-4">
                             <div className="">
-                                <p className="xl:text-md text-sm xl:mb-2 mb-1 font-semibold break-all">Number of reserved places : <span className="font-normal">{course.reservedPlaces}/{course.places}</span></p>
-                                <p className="xl:text-md text-sm xl:mb-0 mb-1 font-semibold break-all">Price : <span className="font-normal">{course.price},00 DZD</span></p>
+                                <p className="xl:text-md text-sm xl:mb-2 mb-1 font-semibold break-all">Nombre de place reservés : <span className="font-normal">{course.reservedPlaces}/{course.places}</span></p>
+                                <p className="xl:text-md text-sm xl:mb-0 mb-1 font-semibold break-all">Prix : <span className="font-normal">{course.price},00 DZD</span></p>
                             </div>
                             <div>
                                 <p className="xl:text-md text-sm xl:mb-2 mb-1 font-semibold break-all">Date : <span className="font-normal">{course.date.slice(0, 10)}</span></p>
@@ -108,11 +112,11 @@ const CourseInformationPage = () => {
             {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg p-6 shadow-lg">
-                        <h3 className="text-lg font-semibold mb-4">Confirm Deletion</h3>
-                        <p>Are you sure you want to delete this course?</p>
+                        <h3 className="text-lg font-semibold mb-4">Confirm suppression</h3>
+                        <p>vous etes que vous voulez supprimer cette formation?</p>
                         <div className="flex justify-end mt-4">
-                            <button onClick={() => setShowModal(false)} className="bg-gray-300 px-4 py-2 rounded mr-2">Cancel</button>
-                            <button onClick={handleDelete} className="bg-red-600 px-4 py-2 rounded text-white">Confirm</button>
+                            <button onClick={() => setShowModal(false)} className="bg-gray-300 px-4 py-2 rounded mr-2">Annuler</button>
+                            <button onClick={handleDelete} className="bg-red-600 px-4 py-2 rounded text-white">Confirmer</button>
                         </div>
                     </div>
                 </div>

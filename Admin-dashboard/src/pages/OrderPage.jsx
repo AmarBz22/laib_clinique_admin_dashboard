@@ -161,20 +161,20 @@ const OrdersPage = () => {
 
   return (
     <div className="md:p-6 flex flex-col px-4 justify-center items-center mt-20 mb-10">
-      <h1 className="text-2xl font-semibold mb-8 text-center">Orders</h1>
+      <h1 className="text-2xl font-semibold mb-8 text-center">Commandes</h1>
       <div className="md:flex md:gap-0 md:justify-between w-full items-center  grid grid-cols-2 gap-4 mb-4">
         <input
           type="text"
-          placeholder="Search by client name"
+          placeholder="recherche par nom de client"
           value={searchTerm}
           onChange={handleSearchChange}
           className="p-2 border rounded md:order-1 order-1 md:col-span-0 col-span-2 md:mx-0 mx-8 "
         />
         <div className='flex  justify-center tems-center  md:order-2 col-span-2 md:mt-0 mt-4 order-3' >
-          <button onClick={handleAll} className={type==="All" ?'py-1 px-3  border-black rounded-l-md bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black rounded-l-md shadow-inner'}>All</button>
-          <button onClick={handleConfrim} className={type==="Confirmed" ?'py-1 px-3  border-black  bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black shadow-inner'}>Confirmed</button>
-          <button onClick={handlePending} className={type==="Pending" ? 'py-1 px-3  border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black   text-black shadow-inner'}>Pending</button>
-          <button  onClick={handleCancel} className={type==="Cancelled" ? 'py-1 px-3 rounded-r-md border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black rounded-r-md  text-black shadow-inner'}>Cancelled</button>
+          <button onClick={handleAll} className={type==="All" ?'py-1 px-3  border-black rounded-l-md bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black rounded-l-md shadow-inner'}>Tous</button>
+          <button onClick={handleConfrim} className={type==="Confirmed" ?'py-1 px-3  border-black  bg-primary-pink text-white shadow-inner' : 'py-1 px-3  border-black shadow-inner'}>Confirmés</button>
+          <button onClick={handlePending} className={type==="Pending" ? 'py-1 px-3  border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black   text-black shadow-inner'}>En Attent</button>
+          <button  onClick={handleCancel} className={type==="Cancelled" ? 'py-1 px-3 rounded-r-md border-black    shadow-inner bg-primary-pink text-white' : 'py-1 px-3  border-black rounded-r-md  text-black shadow-inner'}>Annulés</button>
         </div>
         
       </div>
@@ -184,8 +184,8 @@ const OrdersPage = () => {
         <table className="w-full border-collapse bg-white">
           <thead>
             <tr>
-              <th className="text-gray-800 font-semibold p-3 text-left">Name</th>
-              <th className="text-gray-800 font-semibold p-3 text-left">Phone</th>
+              <th className="text-gray-800 font-semibold p-3 text-left">Nom de Client</th>
+              <th className="text-gray-800 font-semibold p-3 text-left">Numéro</th>
               <th className="text-gray-800 font-semibold p-3 text-left">Status</th>
               <th className="text-gray-800 font-semibold p-3 text-left">Actions</th>
             </tr>
@@ -225,16 +225,16 @@ const OrdersPage = () => {
       {showModal && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-lg font-semibold mb-4">Confirm Action</h2>
+            <h2 className="text-lg font-semibold mb-4">Action de Confirm</h2>
             <p className="mb-4">
-              Are you sure you want to {actionType === 'confirm' ? 'confirm' : 'delete'} this order?
+              Vous etes sur que vous voulez {actionType === 'confirm' ? 'confirmer' : 'supprimer'} cette commande?
             </p>
             <div className="flex justify-end">
               <button
                 className="text-gray-500 order-2 hover:text-gray-700 ml-4"
                 onClick={closeModal}
               >
-                NO
+                NON
               </button>
               <button
                 className={`${
@@ -242,7 +242,7 @@ const OrdersPage = () => {
                 } text-white px-4 py-2 rounded order-1`}
                 onClick={handleAction}
               >
-                  YES
+                  OUI
               </button>
             </div>
           </div>

@@ -26,7 +26,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
         <div className="flex justify-center items-center w-full">
           <div className="flex items-center mb-6">
             <BiBook className="text-3xl mr-2" />
-            <h2 className="text-xl font-semibold">Laib Clinic</h2>
+            <h2 className="text-xl font-semibold">Laib Clinique</h2>
           </div>
           {isSidebarOpen && (
             <IoMdCloseCircle
@@ -39,7 +39,7 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
 
         {/* Menu List */}
         <ul className="flex-1 space-y-4">
-          {/* Dashboard */}
+          {/* Tableau de bord */}
           <li>
             <Link
               to="/"
@@ -51,11 +51,11 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               className="flex items-center p-2 hover:bg-white hover:text-primary-pink rounded transition"
             >
               <BiHome className="mr-2" />
-              <span className="font-semibold">Dashboard</span>
+              <span className="font-semibold">Tableau de bord</span>
             </Link>
           </li>
 
-          {/* Appointments */}
+          {/* Rendez-vous */}
           <li>
             <Link
               to="/appointments"
@@ -67,11 +67,11 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               className="flex items-center p-2 hover:bg-white hover:text-primary-pink rounded transition"
             >
               <BiCalendar className="mr-2" />
-              <span className="font-semibold">Appointments</span>
+              <span className="font-semibold">Rendez-vous</span>
             </Link>
           </li>
 
-          {/* Orders */}
+          {/* Commandes */}
           <li>
             <Link
               to="/orders"
@@ -83,11 +83,11 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               className="flex items-center p-2 hover:bg-white hover:text-primary-pink rounded transition"
             >
               <BiShoppingBag className="mr-2" />
-              <span className="font-semibold">Orders</span>
+              <span className="font-semibold">Commandes</span>
             </Link>
           </li>
 
-          {/* Products */}
+          {/* Produits */}
           <li>
             <Link
               to="/products"
@@ -99,11 +99,11 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               className="flex items-center p-2 hover:bg-white hover:text-primary-pink rounded transition"
             >
               <BiShoppingBag className="mr-2" />
-              <span className="font-semibold">Products</span>
+              <span className="font-semibold">Produits</span>
             </Link>
           </li>
 
-          {/* Courses */}
+          {/* Cours */}
           <li>
             <Link
               to="/courses"
@@ -115,11 +115,11 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               className="flex items-center p-2 hover:bg-white hover:text-primary-pink rounded transition"
             >
               <BiBook className="mr-2" />
-              <span className="font-semibold">Courses</span>
+              <span className="font-semibold">Formations</span>
             </Link>
           </li>
 
-          {/* Statistics */}
+          {/* Statistiques */}
           <li>
             <Link
               to="/statistics"
@@ -131,19 +131,19 @@ const SideBar = ({ toggleSidebar, isSidebarOpen }) => {
               className="flex items-center p-2 hover:bg-white hover:text-primary-pink rounded transition"
             >
               <BiStats className="mr-2" />
-              <span className="font-semibold">Statistics</span>
+              <span className="font-semibold">Statistiques</span>
             </Link>
           </li>
         </ul>
 
-        {/* Logout Button */}
+        {/* Bouton de déconnexion */}
         <div className="mt-auto">
           <button
             onClick={handleLogout}
             className="w-full bg-white text-primary-pink hover:bg-black p-2 rounded transition font-semibold flex items-center justify-center"
             disabled={isLoading}
           >
-            Logout
+            Déconnexion
             {isLoading && <FaSpinner className="animate-spin ml-2" />}
           </button>
         </div>

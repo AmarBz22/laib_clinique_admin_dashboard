@@ -90,22 +90,22 @@ const OrderInformationPage = () => {
     }
   };
 
-  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Loading ... </h3>)
+  if(isLoading) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Chargement ... </h3>)
   if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white rounded-lg shadow-lg  w-full max-w-2xl min-h-[500px]">
         <div className='p-4 bg-primary-pink border-b-2 rounded-t-lg border-gray-300'>
-          <h2 className="text-center text-white text-xl font-semibold ">Order Information</h2>
+          <h2 className="text-center text-white text-xl font-semibold ">Information de la Commande</h2>
         </div>
         
 
         {/* Order Info */}
         <div className="info mb-4 p-8 border-b-2 border-gray-200">
-          <p className="text-black font-bold">Name: <span className="text-gray-500">{orderDetails.clientName}</span></p>
+          <p className="text-black font-bold">Nom: <span className="text-gray-500">{orderDetails.clientName}</span></p>
           <br />
-          <p className="text-black font-bold">Phone: <span className="text-gray-500">{orderDetails.phone}</span></p>
+          <p className="text-black font-bold">Numéro: <span className="text-gray-500">{orderDetails.phone}</span></p>
           <br />
           <p className="text-black font-bold">Status:  
             <span className={`ml-2 font-semibold ${orderDetails.status === 'Confirmed' ? 'text-green-600' : orderDetails.status === 'Cancelled' ? 'text-red-500' : 'text-yellow-500'}`}>
@@ -113,7 +113,7 @@ const OrderInformationPage = () => {
             </span>
           </p>
           <br />
-          <p className="text-black font-bold">Location: <span className="text-gray-500">{orderDetails.address}</span></p>
+          <p className="text-black font-bold">Adress: <span className="text-gray-500">{orderDetails.address}</span></p>
         </div>
 
         {/* Order Items */}
@@ -139,13 +139,13 @@ const OrderInformationPage = () => {
                 className="bg-green-500 text-white px-4 py-2 rounded transition duration-300 hover:bg-white hover:text-green-500 border border-green-500"
                 onClick={() => openModal('confirm')}
               >
-                Confirm
+                Confirmer
               </button>
               <button
                 className="bg-red-500 text-white px-4 py-2 rounded transition duration-300 hover:bg-white hover:text-red-500 border border-red-500"
                 onClick={() => openModal('cancel')}
               >
-                Cancel
+                Annuler
               </button>
             </div>
               <button
@@ -155,7 +155,7 @@ const OrderInformationPage = () => {
                   closeModal();
                   navigate('/orders')}} // Redirect back to orders page
               >
-                Back to Orders
+                Consulter les Commandes
               </button>
             </div>
           ) : (
@@ -166,7 +166,7 @@ const OrderInformationPage = () => {
                 closeModal();
                 navigate('/orders')}} // Redirect back to orders page
             >
-              Back to Orders
+              Consulter les Commandes
             </button>
           )}
         </div>
@@ -176,22 +176,22 @@ const OrderInformationPage = () => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-94 ">
-            <h3 className="text-lg font-semibold mb-4">{actionType === 'confirm' ? 'Confirm Order' : 'Cancel Order'}</h3>
+            <h3 className="text-lg font-semibold mb-4">{actionType === 'confirm' ? 'Confirmer Commande' : 'Annuler Commande'}</h3>
             <p className="mb-4">
-              Are you sure you want to {actionType === 'confirm' ? 'confirm' : 'cancel'} this order?
+            vous-etes sur que vous voulez {actionType === 'confirm' ? 'confirmer' : 'annuler '} cette Command?
             </p>
             <div className="flex justify-end">
               <button
                 className="bg-gray-300 order-2 text-black px-4 py-2 rounded ml-2"
                 onClick={closeModal}
               >
-                NO
+                NON
               </button>
               <button
                 className={`order-1 px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
                 onClick={actionType === 'confirm' ? handleConfirm : handleCancel}
               >
-                YES
+                OUI
                 {/* {actionType === 'confirm' ? 'Confirm' : 'Cancel'} */}
               </button>
             </div>

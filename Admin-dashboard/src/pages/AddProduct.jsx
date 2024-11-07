@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-
-
+import { useNavigate } from 'react-router-dom';
+import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 
 const AddProduct = () => {
   const [product, setProduct] = useState({
@@ -13,8 +12,8 @@ const AddProduct = () => {
     stockQuantity: '',
     photo: null,
   });
-  const navigate = useNavigate(); // Initialize navigate
-
+  const [loading, setLoading] = useState(false); // Loading state
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,6 +26,7 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when form is submitted
 
     const formData = new FormData();
     formData.append('name', product.name);
@@ -41,21 +41,24 @@ const AddProduct = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      toast.success('product added successfully!'); 
-      navigate('/products'); 
+      toast.success('Produit ajouté avec succès !');
+      navigate('/products');
       console.log(response.data);
     } catch (error) {
-      alert('Error adding product');
+      toast.error("Erreur lors de l'ajout du produit");
       console.error(error);
+    } finally {
+      setLoading(false); // Set loading to false when request completes
     }
   };
+
   return (
     <div className="p-6 mt-20">
-      <h1 className="text-2xl font-semibold mb-4 text-center">Add Product</h1>
+      <h1 className="text-2xl font-semibold mb-4 text-center">Ajouter un Produit</h1>
       <div className="border border-gray-300 shadow-lg p-4 rounded-lg mb-6 bg-white">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block mb-2">Product Name:</label>
+            <label className="block mb-2">Nom du Produit :</label>
             <input
               type="text"
               name="name"
@@ -66,7 +69,7 @@ const AddProduct = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Description:</label>
+            <label className="block mb-2">Description :</label>
             <textarea
               name="description"
               value={product.description}
@@ -77,7 +80,7 @@ const AddProduct = () => {
             ></textarea>
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Price:</label>
+            <label className="block mb-2">Prix :</label>
             <input
               type="number"
               name="price"
@@ -89,7 +92,7 @@ const AddProduct = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Stock Quantity:</label>
+            <label className="block mb-2">Quantité en Stock :</label>
             <input
               type="number"
               name="stockQuantity"
@@ -101,7 +104,7 @@ const AddProduct = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Product Image:</label>
+            <label className="block mb-2">Image du Produit :</label>
             <input
               type="file"
               name="photo"
@@ -111,21 +114,25 @@ const AddProduct = () => {
             />
           </div>
           <div className="flex justify-end space-x-2">
-            <button type="submit" className="bg-primary-pink text-white p-2 rounded">
-              Add Product
+            <button
+              type="submit"
+              className="bg-primary-pink text-white p-2 rounded flex items-center justify-center"
+              disabled={loading}
+            >
+              {loading ? <FaSpinner className="animate-spin mr-2" /> : "Ajouter le Produit"}
             </button>
             <button
               type="button"
               className="bg-gray-400 text-white p-2 rounded"
               onClick={() => navigate('/products')}
             >
-              Cancel
+              Annuler
             </button>
           </div>
         </form>
       </div>
     </div>
   );
-}  
+};
+
 export default AddProduct;
-  

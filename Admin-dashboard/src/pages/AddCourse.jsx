@@ -3,8 +3,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { toast } from 'react-toastify';
 import { BACKEND_URL } from '../../constants';
+import { FaSpinner } from "react-icons/fa"; // Import spinner icon
+
 
 const AddTraining = () => {
+  const [loading, setLoading] = useState(false); // Loading state
   const [training, setTraining] = useState({
     title: '',
     description: '',
@@ -45,6 +48,7 @@ const AddTraining = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true at the start
 
     if (!training.photo) {
       toast.error('Please upload a training image.');
@@ -73,23 +77,20 @@ const AddTraining = () => {
         navigate('/courses'); 
       }
     } catch (error) {
-      if(error.response?.data?.message)
-      {
-          toast.error(error.response.data.message)
-      }
-      else{
-          toast.error(error.message)
-      }   
+      const errorMessage = error.response?.data?.message || error.message;
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false); // Set loading to false once the request completes
     }
   };
 
   return (
     <div className="p-6 mt-20">
-      <h1 className="text-2xl font-semibold mb-4 text-center">Add Training</h1>
+      <h1 className="text-2xl font-semibold mb-4 text-center">Ajouter Formation</h1>
       <div className="border border-gray-300 shadow-lg p-4 rounded-lg mb-6 bg-white">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block mb-2">Training Title:</label>
+            <label className="block mb-2">Titre de Formation:</label>
             <input
               type="text"
               name="title"
@@ -118,9 +119,9 @@ const AddTraining = () => {
               onChange={handleChange}
               className="p-2 border rounded w-full"
             >
-              <option value="free">Free</option>
-              <option value="reduced">Reduced</option>
-              <option value="paid">Paid</option>
+              <option value="free">Gratuit</option>
+              <option value="reduced">Reduction</option>
+              <option value="paid">Paié</option>
             </select>
           </div>
           <div className="mb-4">
@@ -131,12 +132,12 @@ const AddTraining = () => {
               onChange={handleChange}
               className="p-2 border rounded w-full"
             >
-              <option value="family and children">Family and Children</option>
+              <option value="family and children">Famille et les Enfants</option>
               <option value="specialist">Specialist</option>
             </select>
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Price:</label>
+            <label className="block mb-2">Prix:</label>
             <input
               type="number"
               name="price"
@@ -160,7 +161,7 @@ const AddTraining = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Number of Places:</label>
+            <label className="block mb-2">Nombre de Places:</label>
             <input
               type="number"
               name="places"
@@ -172,7 +173,7 @@ const AddTraining = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Training Image:</label>
+            <label className="block mb-2"> Image de la Formation:</label>
             <input
               type="file"
               name="photo"
@@ -182,8 +183,12 @@ const AddTraining = () => {
             />
           </div>
           <div className="flex justify-end space-x-2">
-            <button type="submit" className="bg-primary-pink text-white p-2 rounded">
-              Add Training
+          <button
+              type="submit"
+              className="bg-primary-pink text-white p-2 rounded flex items-center justify-center"
+              disabled={loading}
+            >
+              {loading ? <FaSpinner className="animate-spin mr-2" /> : "Ajouter le Produit"}
             </button>
             <button
               type="button"
@@ -192,7 +197,7 @@ const AddTraining = () => {
                 navigate('/courses')
               }
             >
-              Cancel
+              Annuler
             </button>
           </div>
         </form>

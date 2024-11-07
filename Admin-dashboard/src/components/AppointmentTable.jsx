@@ -1,7 +1,7 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { BACKEND_URL } from '../../constants/index'; // Adjust the import path as needed
+import { BACKEND_URL } from '../../constants/index'; // Ajustez le chemin d'importation si nécessaire
 import { toast } from 'react-toastify';
 
 const AppointmentsTable = () => {
@@ -14,14 +14,12 @@ const AppointmentsTable = () => {
         const response = await axios.get(`${BACKEND_URL}/api/appointments/get_appointment`);
         setAppointments(response.data);
       } catch (error) {
-        if(error.response?.data?.message)
-          {
-              toast.error(error.response.data.message)
-          }
-          else{
-              toast.error(error.message)
-          }      
-        } finally {
+        if (error.response?.data?.message) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error(error.message);
+        }
+      } finally {
         setLoading(false);
       }
     };
@@ -29,20 +27,20 @@ const AppointmentsTable = () => {
     fetchAppointments();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Chargement...</div>;
 
-  // Limit to the first 6 appointments and format the date
+  // Limiter aux 6 premiers rendez-vous et formater la date
   const limitedAppointments = appointments.slice(0, 6).map(appointment => ({
     ...appointment,
-    date: appointment.date.split('T')[0], // Format date as YYYY-MM-DD
+    date: appointment.date.split('T')[0], // Formater la date au format AAAA-MM-JJ
   }));
 
   return (
     <div className="w-full mt-5 border border-gray-200 rounded-lg shadow-md">
       <div className="flex justify-between items-center p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold">Recent Appointments</h2>
+        <h2 className="text-lg font-semibold">Rendez-vous récents</h2>
         <Link to="/appointments" className="bg-primary-pink text-white px-4 py-2 rounded transition hover:bg-light-pink font-semibold">
-          See All
+          Voir tout
         </Link>
       </div>
       <table className="w-full border-collapse bg-white">
@@ -50,7 +48,7 @@ const AppointmentsTable = () => {
           <tr>
             <th className="text-gray-800 font-semibold p-3 text-left">Date</th>
             <th className="text-gray-800 font-semibold p-3 text-left">Patient</th>
-            <th className="text-gray-800 font-semibold p-3 text-left">Category</th>
+            <th className="text-gray-800 font-semibold p-3 text-left">Catégorie</th>
           </tr>
         </thead>
         <tbody>

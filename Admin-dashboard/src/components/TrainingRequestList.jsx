@@ -104,20 +104,20 @@ const TrainingRequestList = ({ title }) => {
         setSelectedRequest(null);
     };
 
-    if (isLoading) return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Loading requests...</h3>;
+    if (isLoading) return <h3 className="flex justify-center items-center h-screen text-lg font-bold">Chargement de Demande...</h3>;
     if (error) return <h3 className="flex justify-center items-center h-screen text-lg font-bold text-red-600">{error}</h3>;
 
     return (
         <div className="mt-4">
             <ToastContainer /> {/* Toast Container for notifications */}
-            <h3 className="text-lg font-bold">Training Requests</h3>
+            <h3 className="text-lg font-bold">Demande de Formation</h3>
             {requests.length > 0 ? (
                 <table className="min-w-full table-auto mt-2 border-collapse border border-gray-200">
                     <thead>
                         <tr className="bg-gray-100">
-                            <th className="border p-2 text-left">Name</th>
+                            <th className="border p-2 text-left">Nom</th>
                             <th className="border p-2 text-left">Email</th>
-                            <th className="border p-2 text-left">Phone</th>
+                            <th className="border p-2 text-left">Numéro</th>
                             <th className="border p-2 text-left">Status</th>
                             <th className="border p-2 text-left">Actions</th>
                         </tr>
@@ -130,9 +130,9 @@ const TrainingRequestList = ({ title }) => {
                                 <td className="border p-2">{request.phone}</td>
                                 <td className="border p-2">
                                     {request.status === 'completed' ? (
-                                        <span className="text-green-600 font-bold">Completed</span>
+                                        <span className="text-green-600 font-bold">Confirmer</span>
                                     ) : (
-                                        <span className="text-blue-600 font-bold">Pending</span>
+                                        <span className="text-blue-600 font-bold">En Attent</span>
                                     )}
                                 </td>
                                 <td className="border p-2">
@@ -142,13 +142,13 @@ const TrainingRequestList = ({ title }) => {
                                                 className="bg-green-500 text-white px-2 py-1 rounded mr-2"
                                                 onClick={() => openModal(request._id, 'confirm')}
                                             >
-                                                Confirm
+                                                Confirmer
                                             </button>
                                             <button
                                                 className="bg-red-500 text-white px-2 py-1 rounded"
                                                 onClick={() => openModal(request._id, 'delete')}
                                             >
-                                                Delete
+                                                Supprimer
                                             </button>
                                         </>
                                     ) : (
@@ -156,7 +156,7 @@ const TrainingRequestList = ({ title }) => {
                                             className="bg-yellow-500 text-white px-2 py-1 rounded"
                                             onClick={() => openModal(request._id, 'cancel')}
                                         >
-                                            Cancel
+                                            Annuler
                                         </button>
                                     )}
                                 </td>
@@ -165,7 +165,7 @@ const TrainingRequestList = ({ title }) => {
                     </tbody>
                 </table>
             ) : (
-                <p>No training requests found.</p>
+                <p>Pas de Demande de Formation.</p>
             )}
 
             {/* Modal for Confirm, Delete, or Cancel actions */}
@@ -173,23 +173,23 @@ const TrainingRequestList = ({ title }) => {
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg p-6 w-94">
                         <h3 className="text-lg font-semibold mb-4">
-                            {actionType === 'confirm' ? 'Confirm Request' : actionType === 'delete' ? 'Delete Request' : 'Cancel Request'}
+                            {actionType === 'confirm' ? 'Confirmer' : actionType === 'delete' ? 'Supprimer' : 'Annuler'}
                         </h3>
                         <p className="mb-4">
-                            Are you sure you want to {actionType} this request?
+                            vous etes sur que vous voulez {actionType} Cette Demande?
                         </p>
                         <div className="flex justify-end">
                             <button
                                 className="order-2 bg-gray-300 text-black px-4 py-2 rounded ml-2"
                                 onClick={closeModal}
                             >
-                                No
+                                Non
                             </button>
                             <button
                                 className={`order-1 px-4 py-2 rounded ${actionType === 'confirm' ? 'bg-primary-pink text-white' : actionType === 'delete' ? 'bg-red-500 text-white' : 'bg-yellow-500 text-white'}`}
                                 onClick={actionType === 'confirm' ? handleConfirm : actionType === 'delete' ? handleDelete : handleCancel}
                             >
-                                Yes
+                                Oui
                             </button>
                         </div>
                     </div>
