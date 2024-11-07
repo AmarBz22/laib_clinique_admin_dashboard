@@ -9,11 +9,11 @@ const createProduct = async (req, res) => {
 
     // Check if a product with the same name already exists
     const existingProduct = await Product.findOne({ name });
-
     if (existingProduct) {
       return res.status(400).json({ message: 'A product with the same name already exists' });
     }
 
+    // Create new product if it doesn't already exist
     const product = new Product({
       name,
       description,
@@ -25,12 +25,10 @@ const createProduct = async (req, res) => {
     await product.save();
     res.status(201).json({ message: 'Product created successfully', product });
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'Product name must be unique' });
-    }
     res.status(500).json({ message: 'Error creating product', error: error.message });
   }
 };
+
 
 
 // Get all products
@@ -59,8 +57,8 @@ const getProductById = async (req, res) => {
 // Update a product by ID
 const updateProduct = async (req, res) => {
   try {
-    const { name, description, price, stockQuantity, photo } = req.body;
-
+    const { name, description, price, stockQuantity } = req.body;
+    
     // Prepare the update object
     const updateData = {
       name,
@@ -69,27 +67,32 @@ const updateProduct = async (req, res) => {
       stockQuantity,
     };
 
-    // Only add the photo if it was provided
-    if (photo) {
-      updateData.photo = photo;
+    // Check if a new photo is uploaded and include it in the update object
+    if (req.file) {
+      // If a new photo is provided, store the file path in the updateData
+      updateData.photo = req.file.path;
     }
 
+    // Find and update the product
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true }
     );
 
+    // If no product is found, return a 404 response
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    // Send a success response with the updated product details
     res.status(200).json({ message: 'Product updated successfully', product });
   } catch (error) {
     console.error(error); // Log the complete error
     res.status(500).json({ message: 'Error updating product', error: error.message });
   }
 };
+
 
 
 

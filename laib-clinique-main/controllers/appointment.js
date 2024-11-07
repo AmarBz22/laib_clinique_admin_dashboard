@@ -33,15 +33,25 @@ const createAppointment = async (req, res) => {
       req.io.emit("new-notification", Newnotification);
 
       // Prepare the email body
-      const emailBody = `New Appointment from the client ${fullName}.\nYou can check it at the URL: ${process.env.Front_URL}/appointments/${savedAppointment._id}`;
-      
+      const emailBody = `
+      Nouveau rendez-vous du client ${fullName}.<br /><br />
+  
+      Vous pouvez le consulter en suivant ce lien : <a href="${process.env.Front_URL}/appointments/${savedAppointment._id}">${process.env.Front_URL}/appointments/${savedAppointment._id}</a>.<br /><br />
+  
+      Merci de bien vouloir traiter cette demande de rendez-vous dans les plus brefs délais.<br /><br />
+  
+      Cordialement,<br />
+      L'équipe de Laib Clinic
+  `;
+        
       // Send email notification to the same address
-      await sendEmail(process.env.Mail_sender, 'New Appointment Notification', emailBody); // Ensure recipient is correct
+      await sendEmail(process.env.Mail_sender, 'Nouveau Rendez-vous', emailBody); // Ensure recipient is correct
 
       // Respond with the created appointment
       res.status(201).json(savedAppointment);
   } catch (error) {
       res.status(400).json({ message: 'Error creating appointment: ' + error.message });
+      console.log(error)
   }
 };
 
@@ -49,7 +59,7 @@ const createAppointment = async (req, res) => {
 
 const getAllAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find();
+    const appointments = await Appointment.find().sort({ createdAt: -1 }); // Sort by createdAt in descending order
 
     // Format each appointment's date to "yyyy-MM-dd"
     const formattedAppointments = appointments.map((appointment) => ({
@@ -62,6 +72,7 @@ const getAllAppointments = async (req, res) => {
     res.status(500).json({ message: 'Error retrieving appointments', error });
   }
 };
+
 
 // Confirm Appointment
 const confirmAppointment = async (req, res) => {
@@ -99,7 +110,7 @@ const confirmAppointment = async (req, res) => {
       appointment: updatedAppointment,
     });
   } catch (error) {
-    // Handle server errors
+    console.log(error)
     res.status(500).json({ message: 'Error confirming appointment', error });
   }
 };
@@ -241,6 +252,91 @@ const deleteAllAppointments = async (req, res) => {
   }
 };
 
+const completeAppointment = async (req, res) => {
+  const { id } = req.params;
+
+  // Validate the ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid appointment ID format' });
+  }
+
+  try {
+    // Find the appointment by ID
+    const appointment = await Appointment.findById(id);
+
+    // Check if the appointment exists
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Ensure the appointment status is "Confirmed" before updating to "Completed"
+    if (appointment.status !== 'Confirmed') {
+      return res.status(400).json({ message: 'Appointment must be confirmed before it can be marked as completed' });
+    }
+
+    // Update the status to "Completed"
+    appointment.status = 'Completed';
+    const updatedAppointment = await appointment.save();
+
+    // Return success response with the updated appointment
+    res.status(200).json({ message: 'Appointment marked as completed successfully', appointment: updatedAppointment });
+  } catch (error) {
+    // Handle server errors
+    res.status(500).json({ message: 'Error updating appointment status to completed', error });
+  }
+};
+
+
+const updateAppointmentDateTime = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date, time } = req.body;
+
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      id,
+      { date, time },
+      { new: true }
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    res.status(200).json({ message: 'Appointment updated successfully', updatedAppointment });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update appointment', error: error.message });
+  }
+};
+
+const addAppointmentAdmin = async (req, res) => {
+  try {
+    const { fullName, phoneNumber, location, date, time, category } = req.body;
+
+    // Create new appointment with status confirmed
+    const newAppointment = new Appointment({
+      fullName,
+      phoneNumber,
+      location,
+      date,
+      time,
+      category,
+      status: 'Confirmed', // Set the status to confirmed
+    });
+
+    // Save to the database
+    await newAppointment.save();
+
+    res.status(201).json({
+      message: 'Appointment created successfully',
+      appointment: newAppointment,
+    });
+  } catch (error) {
+    console.error('Error creating appointment:', error);
+    res.status(500).json({ message: 'Failed to create appointment' });
+  }
+};
+
+
 module.exports = {
   createAppointment,
   getAllAppointments,
@@ -250,5 +346,9 @@ module.exports = {
   getAppointmentById,
   deleteAppointment,
   deleteAllAppointments,
-  deleteAppointmentById
+  deleteAppointmentById,
+  completeAppointment,
+  updateAppointmentDateTime,
+  addAppointmentAdmin
+  
 };

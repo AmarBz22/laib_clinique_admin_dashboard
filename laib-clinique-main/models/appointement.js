@@ -23,9 +23,6 @@ const appointmentSchema = new mongoose.Schema({
   },
   time: {
     type: String, // Use String to store time in HH:mm format
-
-    // required: true,
-
   },
   category: {
     type: String,
@@ -34,7 +31,7 @@ const appointmentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Confirmed', 'Cancelled', 'Pending'], // Possible statuses
+    enum: ['Confirmed', 'Completed', 'Pending'], // Updated statuses
     default: 'Pending', // Default status
   },
 }, {

@@ -34,8 +34,17 @@ const CreateTR = async (req, res) => {
       req.io.emit("new-notification", Newnotification);
 
       // Prepare the email body and subject
-      const emailBody = `New Training Request from the client ${name}.\nYou can check it at the URL: ${process.env.Front_URL}/courses/${training._id}`;
-      const emailSubject = `New Training Request for ${title}`; // Dynamic subject line
+      const emailBody = `
+      Nouvelle demande de formation du client ${name}.<br /><br />
+  
+      Vous pouvez la consulter en suivant ce lien : <a href="${process.env.Front_URL}/courses/${training._id}">${process.env.Front_URL}/courses/${training._id}</a>.<br /><br />
+  
+      Merci de bien vouloir traiter cette demande dès que possible.<br /><br />
+  
+      Cordialement,<br />
+      L'équipe de Laib Clinic
+  `;
+        const emailSubject = `Nouvelle Demande de Formation de ${title}`; // Dynamic subject line
 
       // Send email notification to the specified recipient
       await sendEmail(process.env.Mail_sender, emailSubject, emailBody); // Ensure the recipient is correct
@@ -142,14 +151,16 @@ const confirmTR = async (req, res) => {
       await trainingRequest.save();
 
       // Prepare email content
-      const emailBody = `Dear ${trainingRequest.name},\n\n
+      const emailBody = `Cher(e) ${trainingRequest.name},<br /><br />
 
-      We are pleased to inform you that your training request for "${trainingRequest.title}" has been successfully confirmed!\n\n
-      
-      Please mark your calendar for the training date and ensure to arrive at least 15 minutes early to make the most of the experience. If you have any questions or need further assistance, feel free to reach out to our team.\n\n
-      
-      Best regards,\n
-      Laib Clinic Team`;
+      Nous avons le plaisir de vous informer que votre demande de formation pour "${trainingRequest.title}" a été confirmée avec succès ! 🎉<br /><br />
+
+      Veuillez marquer votre calendrier pour la date de la formation et assurez-vous d'arriver au moins 15 minutes avant pour profiter pleinement de l'expérience. Si vous avez des questions ou besoin de plus d'informations, n'hésitez pas à contacter notre équipe. 📅⏰<br /><br />
+
+      Cordialement,<br />
+      L'équipe de Laib Clinic 👩‍⚕️👨‍⚕️`;
+
+
       
       const recipientEmail = trainingRequest.email; // Ensure this is set correctly
 
@@ -159,7 +170,7 @@ const confirmTR = async (req, res) => {
       }
 
       // Send email notification to the requestor
-      await sendEmail(recipientEmail, 'Training Request Confirmation', emailBody); // Correctly passing recipient
+      await sendEmail(recipientEmail, 'Confirmation de Demande de Formation', emailBody); // Correctly passing recipient
 
       res.status(200).json({
           message: 'Training request confirmed successfully',
@@ -212,19 +223,20 @@ const cancelRequest = async (req, res) => {
 
       // Prepare email content
       const emailBody = `
-          Dear ${request.name},\n
-          \n
-          Your training request for "${request.title}" has been successfully canceled.\n
-          \n
-          If you have any questions or would like to reschedule, please feel free to reach out.\n
-          \n
-          Best regards,\n
-          Laib Clinic Team
+          Cher(e) ${request.name},<br /><br />
+
+          Nous vous informons que votre demande de formation pour "${request.title}" a été annulée.<br /><br />
+
+          Si vous avez des questions ou souhaitez reprogrammer, n'hésitez pas à nous contacter.<br /><br />
+
+          Cordialement,<br />
+          L'équipe de Laib Clinic
       `;
 
 
+
       // Send email notification to the requestor
-      await sendEmail(recipientEmail, 'Training Request Cancellation', emailBody); // Correctly passing recipient
+      await sendEmail(recipientEmail, 'Refus de Demande de Formation', emailBody); // Correctly passing recipient
 
       res.status(200).json({ message: 'Request cancelled and removed successfully' });
   } catch (error) {

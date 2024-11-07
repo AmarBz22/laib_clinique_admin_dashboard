@@ -1,108 +1,138 @@
-import React, { useEffect, useState } from 'react';
-import { Bar, Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  LineElement,
-  PointElement,
-  Filler
-} from 'chart.js';
-import Card from '../components/Card';
-import { BiBook, BiCalendar, BiShoppingBag, BiStats } from 'react-icons/bi';
+const mongoose = require('mongoose');
+const Appointment = require('../models/appointement');
+const Order = require('../models/order');
+const Training = require('../models/training');
 
-// Register necessary components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  LineElement,
-  PointElement,
-  Filler
-);
+// Function to get completed appointment statistics by month
+const getCompletedAppointmentStatistics = async (req, res) => {
+  try {
+    const completedAppointments = await Appointment.find({ status: 'Completed' });
 
-const StatisticsPage = () => {
-  const [appointmentsData, setAppointmentsData] = useState({ labels: [], datasets: [] });
-  const [salesData, setSalesData] = useState({ labels: [], datasets: [] });
+    // Create an array to hold counts for each month
+    const monthlyCounts = Array(12).fill(0); // January to December
 
-  useEffect(() => {
-    const fetchStatistics = async () => {
-      try {
-        // Fetch completed appointments
-        const appointmentsResponse = await fetch('http://localhost:4000/api/statistics/completed-appointments');
-        if (!appointmentsResponse.ok) {
-          throw new Error('Network response was not ok for appointments');
-        }
-        const appointments = await appointmentsResponse.json();
-    
-        // Fetch completed sales
-        const salesResponse = await fetch('http://localhost:4000/api/statistics/completed-sales');
-        if (!salesResponse.ok) {
-          throw new Error('Network response was not ok for sales');
-        }
-        const sales = await salesResponse.json();
-    
-        // Prepare data for the charts
-        const currentMonth = new Date().toLocaleString('default', { month: 'long' });
-    
-        setAppointmentsData({
-          labels: appointments.labels,
-          datasets: [{
-            label: 'Number of Appointments',
-            data: appointments.data, // Use data from the response
-            backgroundColor: '#FF5E7E',
-          }],
-        });
-    
-        setSalesData({
-          labels: sales.labels,
-          datasets: [{
-            label: 'Number of Sales',
-            data: sales.data, // Use data from the response
-            fill: true,
-            backgroundColor: '#F9A8D4',
-            borderColor: '#FF5E7E',
-            borderWidth: 2,
-          }],
-        });
-      } catch (error) {
-        console.error('Error fetching statistics:', error);
-      }
+    // Iterate through completed appointments and count by month
+    completedAppointments.forEach(appointment => {
+      const month = new Date(appointment.date).getMonth(); // 0-11
+      monthlyCounts[month]++;
+    });
+
+    // Prepare response data
+    const response = {
+      labels: [
+        'January', 'February', 'March', 'April',
+        'May', 'June', 'July', 'August',
+        'September', 'October', 'November', 'December'
+      ],
+      data: monthlyCounts
     };
 
-    fetchStatistics();
-  }, []);
-
-  return (
-    <div className="mt-20 flex flex-col items-center gap-8">
-      <h1 className="text-2xl font-semibold text-center mt-10">Statistics</h1>
-      <div className="grid xl:grid-cols-4 grid-cols-2 w-full gap-4 mt-5 items-center px-4">
-        <Card title="Total Appointments" number="250" icon={BiCalendar} />
-        <Card title="Pending Orders" number="45" icon={BiShoppingBag} />
-        <Card title="Active Courses" number="5" icon={BiBook} />
-        <Card title="Overall Statistics" number="92%" icon={BiStats} />
-      </div>
-      <div className="w-full grid grid-cols-2 gap-4 px-4">
-        <div className="chart-container shadow-md p-4 rounded-lg">
-          <Bar data={appointmentsData} />
-          <h2 className="text-center font-bold">Number of Appointments by Month</h2>
-        </div>
-        <div className="chart-container shadow-md p-4 rounded-lg">
-          <Line data={salesData} />
-          <h2 className="text-center font-bold">Number of Orders Over Time</h2>
-        </div>
-      </div>
-    </div>
-  );
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Error fetching completed appointment statistics:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 };
 
-export default StatisticsPage;
+// Function to get completed sales statistics over time (by month)
+const getCompletedSalesStatistics = async (req, res) => {
+  try {
+    const completedOrders = await Order.find({ status: 'Confirmed' });
+
+    // Create an array to hold counts for each month
+    const monthlySales = Array(12).fill(0); // January to December
+
+    // Iterate through completed orders and count sales by month
+    completedOrders.forEach(order => {
+      const month = new Date(order.createdAt).getMonth(); // 0-11
+      monthlySales[month]++;
+    });
+
+    // Prepare response data
+    const response = {
+      labels: [
+        'January', 'February', 'March', 'April',
+        'May', 'June', 'July', 'August',
+        'September', 'October', 'November', 'December'
+      ],
+      data: monthlySales
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Error fetching completed sales statistics:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Function to get training statistics
+const getTrainingStatistics = async (req, res) => {
+  try {
+    const trainingStats = await Training.aggregate([
+      {
+        $project: {
+          _id: 0, // Exclude the ID field from the result
+          name: "$title",
+          audience: "$audience",
+          type: "$type",
+          reservedPlaces: "$reservedPlaces",
+          totalPrice: { $multiply: ["$reservedPlaces", "$price"] } // Calculate total price
+        }
+      },
+      {
+        $sort: { createdAt: -1 } // Sort by createdAt in descending order
+      }
+    ]);
+
+    res.status(200).json(trainingStats);
+  } catch (error) {
+    console.error('Error retrieving training statistics:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Function to get the number of pending orders
+const getPendingOrders = async (req, res) => {
+  try {
+    const pendingOrders = await Order.countDocuments({ status: 'Pending' });
+    res.status(200).json(pendingOrders);
+  } catch (error) {
+    console.error('Error fetching pending orders:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Function to get the number of active courses
+const getActiveCourses = async (req, res) => {
+    try {
+      const activeCourses = await Training.countDocuments({
+        $expr: { $lt: ["$reservedPlaces", "$places"] } // Compare reservedPlaces with places directly within the document
+      });
+      res.status(200).json(activeCourses);
+    } catch (error) {
+      console.error('Error fetching active courses:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+  
+  
+
+// Function to get the total number of appointments
+const getTotalAppointments = async (req, res) => {
+  try {
+    const totalAppointments = await Appointment.countDocuments();
+    res.status(200).json(totalAppointments);
+  } catch (error) {
+    console.error('Error fetching total appointments:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+module.exports = {
+  getCompletedAppointmentStatistics,
+  getCompletedSalesStatistics,
+  getTrainingStatistics,
+  getPendingOrders,
+  getActiveCourses,
+  getTotalAppointments
+};

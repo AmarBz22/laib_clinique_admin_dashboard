@@ -10,23 +10,34 @@ const createTraining = async (req, res) => {
         const validTypes = ['paid', 'free', 'reduced'];
         const validAudiences = ['family and children', 'specialist'];
 
+        // Check if type is valid
         if (!validTypes.includes(type)) {
             return res.status(400).json({ message: `Invalid training type. Allowed values: ${validTypes.join(', ')}` });
         }
 
+        // Check if audience is valid
         if (!validAudiences.includes(audience)) {
             return res.status(400).json({ message: `Invalid audience. Allowed values: ${validAudiences.join(', ')}` });
         }
 
+        // Check if price is valid for paid training
         if (type === 'paid' && (!price || isNaN(price) || price <= 0)) {
             return res.status(400).json({ message: 'Price must be a valid positive number for paid trainings.' });
         }
 
+        // Check if photo is provided
         const photo = req.file ? req.file.path : null;
         if (!photo) {
             return res.status(400).json({ message: 'Photo is required.' });
         }
 
+        // Check if a course with the same title and date already exists
+        const existingTraining = await Training.findOne({ title, date });
+        if (existingTraining) {
+            return res.status(400).json({ message: 'A training with the same title and date already exists.' });
+        }
+
+        // Create new training if not already existing
         const training = await Training.create({
             description,
             photo,
@@ -44,6 +55,7 @@ const createTraining = async (req, res) => {
     }
 };
 
+
 // Get all trainings
 const getAllTrainings = async (req, res) => {
     try {
@@ -53,6 +65,21 @@ const getAllTrainings = async (req, res) => {
         res.status(500).json({ message: 'Error retrieving trainings', error: error.message });
     }
 };
+
+const getAllTrainingsClient = async (req, res) => {
+    try {
+        // Use $expr to compare fields in the same document
+        const trainings = await Training.find({
+            $expr: { $lt: ["$reservedPlaces", "$places"] }
+        });
+
+        res.status(200).json(trainings);
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving trainings', error: error.message });
+    }
+};
+
+
 
 // Get training by ID
 const getTrainingById = async (req, res) => {
@@ -176,5 +203,6 @@ module.exports = {
     getTrainingById,
     deleteTraining,
     deleteAllTrainings,
-    updateTraining
+    updateTraining,
+    getAllTrainingsClient
 };

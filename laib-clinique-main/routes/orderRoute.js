@@ -15,4 +15,6 @@ router.delete('/:id',orderController.deleteOrder)
 
 router.get('/:id',orderController.getOrderById);
 
+router.delete('/',orderController.deleteAllOrders)
+
 module.exports = router;

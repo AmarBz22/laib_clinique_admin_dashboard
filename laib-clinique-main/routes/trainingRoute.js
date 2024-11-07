@@ -6,7 +6,8 @@ const {
     deleteTraining,
 
     deleteAllTrainings,
-    updateTraining
+    updateTraining,
+    getAllTrainingsClient
 } = require('../controllers/training'); // Make sure the path is correct
 const upload = require('../middlewares/upload'); // Multer configuration
 
@@ -22,6 +23,8 @@ router.put('/update/:id', upload.single('photo'), updateTraining);
 
 // Get all training requests
 router.get('/get_training', getAllTrainings);
+
+router.get('/get_training_client', getAllTrainingsClient)
 
 // Get training by ID
 router.get('/:id', getTrainingById);
