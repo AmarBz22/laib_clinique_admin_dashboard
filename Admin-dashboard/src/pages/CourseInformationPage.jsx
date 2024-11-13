@@ -88,7 +88,7 @@ const CourseInformationPage = () => {
                         className="md:w-1/2 w-full object-cover rounded-sm"
                     />
                     <div className="w-full">
-                        <p className="text-md xl:h-3/4 md:h-1/2 h-fit md:pb-0 pb-2 border-b-2 border-b-gray-400">
+                        <p className="text-md md:max-h-40 overflow-auto xl:h-3/4 md:h-1/2 h-fit md:pb-0 pb-2 border-b-2 border-b-gray-400">
                             {course.description}
                         </p>
                         <div className="xl:flex justify-between items-center xl:mt-4">

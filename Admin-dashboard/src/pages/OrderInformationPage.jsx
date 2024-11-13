@@ -94,7 +94,7 @@ const OrderInformationPage = () => {
   if(error) return ( <h3 className="flex justify-center items-center h-screen  text-lg font-bold text-red-600"> {error} </h3>)
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center h-screen mt-[80px] bg-gray-100">
       <div className="bg-white rounded-lg shadow-lg  w-full max-w-2xl min-h-[500px]">
         <div className='p-4 bg-primary-pink border-b-2 rounded-t-lg border-gray-300'>
           <h2 className="text-center text-white text-xl font-semibold ">Information de la Commande</h2>

@@ -106,7 +106,7 @@ const StatisticsPage = () => {
     fetchStatistics();
   }, []);
 
-  if (loading) return <div>Chargement...</div>;
+  if (loading) return<h3 className="flex justify-center items-center h-screen  text-lg font-bold"> Chargement ... </h3>;
   if (error) return <div>Erreur : {error}</div>;
 
   return (
@@ -118,17 +118,24 @@ const StatisticsPage = () => {
         <Card title="Cours Actifs" number={activeCourses || 0} icon={BiBook} />
         <Card title="Statistiques Globales" number="92%" icon={BiStats} />
       </div>
-      <div className="w-full grid grid-cols-2 gap-4 px-4">
+
+
+
+      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4 px-4">
         <div className="chart-container shadow-md p-4 rounded-lg">
           <Bar data={appointmentsData} />
           <h2 className="text-center font-bold">Nombre de Rendez-vous par Mois</h2>
         </div>
+
         <div className="chart-container shadow-md p-4 rounded-lg">
           <Line data={salesData} />
           <h2 className="text-center font-bold">Nombre de Commandes au Fil du Temps</h2>
         </div>
       </div>
-      <CourseStatsTable courseStats={courseStats} />
+
+      <div className="w-full mt-6 px-4">
+        <CourseStatsTable courseStats={courseStats} />
+      </div>
     </div>
   );
 };

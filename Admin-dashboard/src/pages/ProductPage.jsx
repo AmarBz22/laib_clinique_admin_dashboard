@@ -30,7 +30,7 @@ const ProductCard = () => {
     <div className='p-6 mt-20'>
       <h1 className="text-2xl font-semibold mb-8 text-center">Produits</h1>
 
-      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between mb-8">
+      <div className="flex md:gap-0 gap-5 flex-col md:flex-row xl:items-center md:justify-between mb-8">
         <input
           type="text"
           placeholder="Rechercher par titre..."
@@ -39,7 +39,7 @@ const ProductCard = () => {
           className="w-full md:w-1/3 p-2 border rounded"
         />
         <Link to="addProduct">
-          <button className="bg-primary-pink text-white py-2 px-4 rounded ml-4 hover:bg-pink-700 transition">
+          <button className="bg-primary-pink text-white py-2 px-4 rounded  hover:bg-pink-700 transition">
             Ajouter un produit
           </button>
         </Link>

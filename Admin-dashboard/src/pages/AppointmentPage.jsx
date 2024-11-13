@@ -218,7 +218,7 @@ const AppointmentsPage = () => {
   />
   <Link to="addAppointment">
   <button 
-    className="p-2 bg-primary-pink text-white rounded order-4 lg:mt-0 mt-4">
+    className="p-2 bg-primary-pink text-white rounded order-4 ">
     {loading ? <FaSpinner className="animate-spin mr-2" /> : "Ajouter Rendez-vous"}
 
   </button>
