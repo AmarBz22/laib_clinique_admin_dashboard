@@ -119,7 +119,7 @@ const CoursesPage = () => {
 
                   </p>
                   <p className="text-sm text-muted-gray-text mb-2">Public : {course.audience}</p>
-                  <p className="text-sm text-muted-gray-text mb-2">Prix : {course.price === 0 ? 'Gratuit' : `$${course.price}`}</p>
+                  <p className="text-sm text-muted-gray-text mb-2">Prix : {course.price === 0 ? 'Gratuit' : `DZ ${course.price}`}</p>
                   <Link to={"/courses/"+course._id} className="bg-primary-pink text-white px-4 py-2 rounded mt-2">
                     Voir plus
                   </Link>
